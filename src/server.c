@@ -58,16 +58,17 @@ int main(int argc, char *argv[]){
 			error("ERROR reading from socket");
 		}
 		else {
+			char temp[strlen(buffer)];
+			strcpy(temp, buffer);
 			printf("%s\n",buffer);
 			char *token;//[4];
 			char delim[] = " ";
-			token = strtok(buffer, " /");  // first call returns pointer to first part of user_input separated by delim
+			token = strtok(temp, " //");  // first call returns pointer to first part of user_input separated by delim
 			token = strtok(NULL, " ");  // every call with NULL uses saved user_input value and returns next substring
 
-			printf("%s\n",token);
 			char filename[strlen(token)];
 			strcpy( filename, token);
-			memmove(filename, filename+1, strlen(filename-1));
+			memmove(filename+1, filename+1, strlen(filename-1));
 			printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
 			printf("%s\n",buffer);
