@@ -61,8 +61,8 @@ int main(int argc, char *argv[]){
 			printf("%s\n",buffer);
 			char *token;//[4];
 			char delim[] = " ";
-			token = strtok(buffer, delim);  // first call returns pointer to first part of user_input separated by delim
-			token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
+			token = strtok(buffer, " /");  // first call returns pointer to first part of user_input separated by delim
+			token = strtok(NULL, " ");  // every call with NULL uses saved user_input value and returns next substring
 
 			printf("%s\n",token);
 			char filename[strlen(token)];
