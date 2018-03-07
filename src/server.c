@@ -59,7 +59,8 @@ int main(int argc, char *argv[]){
 		}
 		else {
 			char *token[4];
-			token[0] = strtok(user_input, delim);  // first call returns pointer to first part of user_input separated by delim
+			char delim = ' ';
+			token[0] = strtok(buffer, delim);  // first call returns pointer to first part of user_input separated by delim
 			int i=0;
 			while (token[i] != NULL) {
 				i++;
