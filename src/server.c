@@ -57,7 +57,16 @@ int main(int argc, char *argv[]){
 			error("ERROR reading from socket");
 		}
 		else {
-
+			char *token[4];
+			token[0] = strtok(user_input, delim);  // first call returns pointer to first part of user_input separated by delim
+			int i=0;
+			while (token[i] != NULL) {
+				i++;
+				token[i] = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
+			}
+			char filename[strlen(token[1])];
+			strcpy( filename, token[1][1]);
+			printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
 			printf("%s\n",buffer);
 
