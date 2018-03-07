@@ -23,10 +23,13 @@ int main() {
     tcp_server_address.sin_addr.s_addr = INADDR_ANY;        //Connecting to 0.0.0.0
 
     // binding the socket to the IP address and port
-    bind(tcp_server_socket, (struct sockaddr *) &tcp_server_address, sizeof(tcp_server_address));  //Params: which socket, cast for server address, its size
+    //bind(tcp_server_socket, (struct sockaddr *) &tcp_server_address, sizeof(tcp_server_address));  //Params: which socket, cast for server address, its size
 
     while(1==1) {
-		//listen for simultaneous connections
+    	// binding the socket to the IP address and port
+		bind(tcp_server_socket, (struct sockaddr *) &tcp_server_address, sizeof(tcp_server_address));  //Params: which socket, cast for server address, its size
+
+    	//listen for simultaneous connections
 		listen(tcp_server_socket, 5);  //which socket, how many connections
 
 		int tcp_client_socket;
