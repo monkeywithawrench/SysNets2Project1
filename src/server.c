@@ -58,6 +58,7 @@ int main(int argc, char *argv[]){
 			error("ERROR reading from socket");
 		}
 		else {
+			printf("%s\n",buffer);
 			char *token[4];
 			char delim[] = " ";
 			token[0] = strtok(buffer, delim);  // first call returns pointer to first part of user_input separated by delim
