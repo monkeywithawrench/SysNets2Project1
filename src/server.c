@@ -66,8 +66,9 @@ int main(int argc, char *argv[]){
 			token = strtok(temp, delim);  // first call returns pointer to first part of user_input separated by delim
 			token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
 
-			char filename[strlen(token)];
-			strcpy( filename, token);
+			//char filename[strlen(token)];
+			//strcpy( filename, token);
+			char *filename = token;
 			filename++;
 			//memmove(filename+1, filename+1, strlen(filename-1));
 			printf("%s\n",filename);
