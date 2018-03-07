@@ -59,17 +59,14 @@ int main(int argc, char *argv[]){
 		}
 		else {
 			printf("%s\n",buffer);
-			char *token[4];
+			char *token;//[4];
 			char delim[] = " ";
-			token[0] = strtok(buffer, delim);  // first call returns pointer to first part of user_input separated by delim
-			int i=0;
-			while (token[i] != NULL) {
-				i++;
-				token[i] = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
-			}
-			printf("%s\n",token[1]);
-			char filename[strlen(token[1])];
-			strcpy( filename, token[1]);
+			token = strtok(buffer, delim);  // first call returns pointer to first part of user_input separated by delim
+			token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
+
+			printf("%s\n",token);
+			char filename[strlen(token)];
+			strcpy( filename, token);
 			memmove(filename, filename+1, strlen(filename-1));
 			printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
