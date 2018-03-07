@@ -25,17 +25,20 @@ int main() {
     // binding the socket to the IP address and port
     bind(tcp_server_socket, (struct sockaddr *) &tcp_server_address, sizeof(tcp_server_address));  //Params: which socket, cast for server address, its size
 
-    //listen for simultaneous connections
-    listen(tcp_server_socket, 5);  //which socket, how many connections
+    while(1==1) {
+		//listen for simultaneous connections
+		listen(tcp_server_socket, 5);  //which socket, how many connections
 
-    int tcp_client_socket;
-    tcp_client_socket = accept(tcp_server_socket, NULL, NULL);  // server socket to interact with client, structure like before - if you know - else NULL for local connection
+		int tcp_client_socket;
+		tcp_client_socket = accept(tcp_server_socket, NULL, NULL);  // server socket to interact with client, structure like before - if you know - else NULL for local connection
 
-    //send data stream
-    send(tcp_client_socket, tcp_server_message, sizeof(tcp_server_message), 0);  // send where, what, how much, flags (optional)
+		//send data stream
+		send(tcp_client_socket, tcp_server_message, sizeof(tcp_server_message), 0);  // send where, what, how much, flags (optional)
 
-    //close the socket
-    close(tcp_server_socket);
+		//close the socket
+		close(tcp_server_socket);
+    }
 
     return 0;
+
 }
