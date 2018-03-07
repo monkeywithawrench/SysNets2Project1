@@ -1,6 +1,7 @@
 #include <stdio.h>          //Standard library
 #include <stdlib.h>         //Standard library
 #include <strings.h>
+#include <string.h>
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
