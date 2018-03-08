@@ -1,61 +1,60 @@
 #include <stdio.h>          //Standard library
 #include <stdlib.h>         //Standard library
-#include <strings.h>
-#include <string.h>
+#include <strings.h>        //Strings Library
+#include <string.h>         //String Library
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
-//The server
-void error(char *msg){
-	perror(msg);
-	exit(1);
-}
 
+//The server
 int main(int argc, char *argv[]){
-	int sockfd, newsockfd, portno, clilen;
+	int socket_hold, newsocket, port, client, n;
 	char buffer[256];
-	struct sockaddr_in serv_addr, cli_addr;
-	int n;
+	struct sockaddr_in server_address, client_address;
 	//exe >> port#
 	if (argc < 2){
-		fprintf(stderr,"ERROR, no port provided\n");
+		fprintf(stderr,"You haven't provided a port number\n");
 		exit(1);
 	}
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	socket_hold = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (sockfd < 0){
-		error("ERROR opening socket");
+	if (socket_hold < 0){
+		fprintf(stderr,"Opening socket failed");
+      		exit(1);
 	}
 
-	bzero((char *) &serv_addr, sizeof(serv_addr));
+	bzero((char *) &server_address, sizeof(server_address));
 
-	portno = atoi(argv[1]);
+	port = atoi(argv[1]);
 
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = INADDR_ANY;
-	serv_addr.sin_port = htons(portno);
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = INADDR_ANY;
+	server_address.sin_port = htons(port);
 
-	if (bind(sockfd, (struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0){
-		error("ERROR on binding");
+	if (bind(socket_hold, (struct sockaddr *) &server_address,sizeof(server_address)) < 0){
+		fprintf(stderr,"Binding failed");
+     	 	exit(1);
 	}
 
 	while(1==1) { //while true (runs forever)
-		listen(sockfd,5);
-		clilen = sizeof(cli_addr);
+		listen(socket_hold,5);
+		client = sizeof(client_address);
 
-		newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr, &clilen);
+		newsocket = accept(socket_hold,(struct sockaddr *) &client_address, &client);
 
-		if (newsockfd < 0){
-			error("ERROR on accept");
+		if (newsocket < 0){
+			fprintf(stderr,"Accept failed");
+         		exit(1);
 		}
 
 		bzero(buffer,256);
 
-		n = read(newsockfd,buffer,255);
+		n = read(newsocket,buffer,255);
 
 		if (n <= 0){
-			error("ERROR reading from socket");
+			fprintf(stderr,"Reading from socket fail");
+         		exit(1);
 		}
 		else {
 			char temp[strlen(buffer)];
@@ -72,10 +71,11 @@ int main(int argc, char *argv[]){
 			//printf("Here is the message: %s\n",buffer);
 			//printf("%s\n",buffer);
 
-			n = write(newsockfd,"I got your message",18);
+			n = write(newsocket,"Message is up, thanks",18);
 
 			if (n < 0){
-				error("ERROR writing to socket");
+				fprintf(stderr,"Writing to socket fail");
+            			exit(1);
 			}
 		}
 	}
