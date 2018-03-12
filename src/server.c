@@ -80,7 +80,8 @@ int main(int argc, char *argv[]){
 			if(strlen(filename)>0) {
 				if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
-					n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
+					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
+					n = write(newsocket,"POST //%s HTTP//1.1\n", filename, BUFFER_MAX_SIZE);
 				}
 			}
 
