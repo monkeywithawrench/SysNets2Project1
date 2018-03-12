@@ -82,13 +82,16 @@ int main(int argc, char *argv[]){
 					//file exists
 					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
 					char postrequest[BUFFER_MAX_SIZE];
-					snprintf(postrequest, sizeof(postrequest), "POST //%s HTTP//1.1\n", filename);
+					snprintf(postrequest, sizeof(postrequest), "POST /%s HTTP/1.1\n", filename);
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Host: notarealaddress\n");
-					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Connection: keep-alive\n");
-					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Content-Length: 0\n");
+					//snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Connection: keep-alive\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Connection: close\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Content-Length: 44\n");
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Cache-Control: no-cache\n");
-					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Origin: Server program info");
-					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "User-Agent: Server machine info");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Origin: Server program info\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "User-Agent: Server machine info\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Content-Type: text/html\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "<html><body><h1>It works!</h1></body></html>\n");
 
 					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
 				}
