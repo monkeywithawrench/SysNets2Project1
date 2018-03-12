@@ -81,7 +81,16 @@ int main(int argc, char *argv[]){
 				if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
 					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
-					n = write(newsocket,"POST //%s HTTP//1.1\n", filename, BUFFER_MAX_SIZE);
+					char postrequest[BUFFER_MAX_SIZE];
+					snprintf(postrequest, sizeof(postrequest), "POST //%s HTTP//1.1\n", filename);
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Host: notarealaddress\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Connection: keep-alive\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Content-Length: 0\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Cache-Control: no-cache\n");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Origin: Server program info");
+					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "User-Agent: Server machine info");
+
+					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
 				}
 			}
 
