@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
 			//printf("%s\n",buffer);
 
 			if(strlen(filename)>0) {
-				if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
+				//if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
 					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
 					char postrequest[BUFFER_MAX_SIZE];
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "<html><body><h1>It works!</h1></body></html>\n");
 
 					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
-				}
+				//}
 			}
 
 			//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
