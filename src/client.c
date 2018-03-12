@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in server_address;//IPV4
 	struct hostent *server;//store info of host
 	int socket_hold, port, n;
-	char buffer[256];
+	char buffer[BUFFER_MAX_SIZE];
 
 	//exe >> purpose >> port#
 	if (argc < 3){
