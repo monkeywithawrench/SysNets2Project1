@@ -5,13 +5,18 @@
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
+#include <unistd.h>         //Needed for access() to check file information
+
+
+#define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
+							 //Plus 256 isn't enough bytes anyways
 
 //The server
 int main(int argc, char *argv[]){
 	
 	struct sockaddr_in server_address, client_address;
 	int socket_hold, newsocket, port, client, n;
-	char buffer[256];
+	char buffer[BUFFER_MAX_SIZE];
 
 	//exe >> port#
 	if (argc < 2){
@@ -49,8 +54,8 @@ int main(int argc, char *argv[]){
          		exit(1);
 		}
 
-		memset(buffer,0,256);
-		n = read(newsocket,buffer,255);
+		memset(buffer,0,BUFFER_MAX_SIZE);
+		n = read(newsocket,buffer,BUFFER_MAX_SIZE);
 
 		if (n <= 0){
 			fprintf(stderr,"Reading from socket fail");
@@ -72,7 +77,14 @@ int main(int argc, char *argv[]){
 			//printf("Here is the message: %s\n",buffer);
 			//printf("%s\n",buffer);
 
-			n = write(newsocket,"Message is up, thanks\n",256);
+			if(strlen(filename)>0) {
+				if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
+					//file exists
+					n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
+				}
+			}
+
+			//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
 
 			if (n < 0){
 				fprintf(stderr,"Writing to socket fail");
