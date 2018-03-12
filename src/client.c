@@ -1,68 +1,75 @@
 #include <stdio.h>          //Standard library
 #include <stdlib.h>         //Standard library
-#include <strings.h>
-#include <string.h>
+#include <strings.h>        //Strings Library
+#include <string.h>         //String Library
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
 #include <netdb.h>
 
-void error(char *msg){
-	perror(msg);
-	exit(0);
-}
+//The client
+int main(int argc, char *argv[]){
 
-int main(int argc, char *argv[])
-{
-	int sockfd, portno, n;
-	struct sockaddr_in serv_addr;
-	struct hostent *server;
-	
+	struct sockaddr_in server_address;//IPV4
+	struct hostent *server;//store info of host
+	int socket_hold, port, n;
 	char buffer[256];
+
 	//exe >> purpose >> port#
 	if (argc < 3){
-		fprintf(stderr,"usage %s hostname port\n", argv[0]);
+		fprintf(stderr,"Please provide a hostname and port number\n");
 		exit(0);
 	}
 
-	portno = atoi(argv[2]);
+	//Check for valid port 
+	port = atoi(argv[2]);
+        /*if(portno < 60001 || portno > 60099){    
+		fprintf(stderr,"Invalid port number");
+		exit(0);
+	}*/
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (sockfd < 0 ){
-		error("Socket Fail");
+	//Check for socket
+	socket_hold = socket(AF_INET, SOCK_STREAM, 0);//return file descriptor, else -1
+	if (socket_hold < 0 ){
+		fprintf(stderr,"Socket Fail");
+      		exit(0);
 	}
-	server = gethostbyname(argv[1]);//server name
+
+	//Check hostname
+	server = gethostbyname(argv[1]);//server name, return hostent
 	if (server == NULL){
-		fprintf(stderr,"Invalid Host\n");
+		fprintf(stderr,"Host don't exist\n");
 		exit(0);
 	}
 	
-	//int addrSize = sizeof(serv_addr);
-	//char * addr = (char*) &serv_addr;
-	bzero((char*) &serv_addr,sizeof(serv_addr));//clear adress
-	serv_addr.sin_family = AF_INET;
-
-	bcopy((char*)server->h_addr,(char*) &serv_addr.sin_addr.s_addr,server->h_length);
-	serv_addr.sin_port = htons(portno);
+	memset((char*) &server_address,0,sizeof(server_address));
+	server_address.sin_family = AF_INET;//For internet, IP address, address family
+	memmove((char*) &server_address.sin_addr.s_addr,(char*)server->h_addr,server->h_length);
+	server_address.sin_port = htons(port);
 	
-	int checkConnect = connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr));
+	//Check the connection
+	int checkConnect = connect(socket_hold,(struct sockaddr *)&server_address,sizeof(server_address));//(reference to socket by file descriptor,the specified address, address space of socket)
 	if ( checkConnect < 0){
-		error("ERROR connecting");
+		fprintf(stderr,"Failed connectiopn");
+      		exit(0);
 	}
-	printf("Please enter the message: ");
-	bzero(buffer,256);
+
+	/*Interface with the user*/
+	printf("Enter message sent to server: ");
+	memset(buffer,0,256);
 	fgets(buffer,255,stdin);
-	
-	n = write(sockfd,buffer,strlen(buffer));
-	if (n < 0)
-	{
-		error("ERROR writing to socket");
-	}
-	bzero(buffer,256);
-	n = read(sockfd,buffer,255);
+	n = write(socket_hold,buffer,strlen(buffer));//(reference to socket by file descriptor, the message written, write up to this length
+	//Check write success
 	if (n < 0){
-		error("ERROR reading from socket");
+		fprintf(stderr,"Writing to socket fail");
+      		exit(0);
+	}
+	memset(buffer,0,256);
+	//Check read success
+	n = read(socket_hold,buffer,255);//(reference to socket by file descriptor, the message read, read up to this length)
+	if (n < 0){
+		fprintf(stderr,"Reading from socket fail");
+      		exit(0);
 	}
 	printf("%s\n",buffer);
 
