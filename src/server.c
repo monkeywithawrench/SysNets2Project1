@@ -83,7 +83,7 @@ int main(int argc, char *argv[]){
 					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
 					//char postrequest[BUFFER_MAX_SIZE] = "";
 					char *postrequest;
-					asprintf(&postrequest, "POST /%s HTTP/1.1\n", postrequest, filename);
+					asprintf(&postrequest, "POST /%s HTTP/1.1\n", filename);
 					asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 					//asprintf(&postrequest, "%sConnection: keep-alive\n");
 					asprintf(&postrequest, "%sConnection: close\n", postrequest);
