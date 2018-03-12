@@ -42,7 +42,7 @@ int main(int argc, char *argv[]){
 	//Check hostname
 	server = gethostbyname(argv[1]);//server name, return hostent
 	if (server == NULL){
-		fprintf(stderr,"Host don't exist\n");
+		fprintf(stderr,"Host does not exist\n");
 		exit(0);
 	}
 	
