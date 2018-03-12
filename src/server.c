@@ -81,7 +81,20 @@ int main(int argc, char *argv[]){
 				//if(access(filename, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
 					//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
-					char postrequest[BUFFER_MAX_SIZE];
+					//char postrequest[BUFFER_MAX_SIZE] = "";
+					char *postrequest;
+					asprintf(&postrequest, "POST /%s HTTP/1.1\n", postrequest, filename);
+					asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
+					//asprintf(&postrequest, "%sConnection: keep-alive\n");
+					asprintf(&postrequest, "%sConnection: close\n", postrequest);
+					asprintf(&postrequest, "%sContent-Length: 44\n", postrequest);
+					asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
+					asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
+					asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
+					asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+					asprintf(&postrequest, "%s<html><body><h1>It works!</h1></body></html>\n", postrequest);
+
+					/*
 					snprintf(postrequest, sizeof(postrequest), "POST /%s HTTP/1.1\n", filename);
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Host: notarealaddress\n");
 					//snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Connection: keep-alive\n");
@@ -92,6 +105,7 @@ int main(int argc, char *argv[]){
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "User-Agent: Server machine info\n");
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "Content-Type: text/html\n");
 					snprintf(postrequest+sizeof(postrequest), sizeof(postrequest), "<html><body><h1>It works!</h1></body></html>\n");
+					*/
 
 					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
 				//}
