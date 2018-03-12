@@ -7,6 +7,10 @@
 #include <netinet/in.h>     //Structures to store address information
 #include <netdb.h>
 
+
+#define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
+							 //Plus 256 isn't enough bytes anyways
+
 //The client
 int main(int argc, char *argv[]){
 
@@ -56,17 +60,17 @@ int main(int argc, char *argv[]){
 
 	/*Interface with the user*/
 	printf("Enter message sent to server: ");
-	memset(buffer,0,256);
-	fgets(buffer,255,stdin);
+	memset(buffer,0,BUFFER_MAX_SIZE);
+	fgets(buffer,BUFFER_MAX_SIZE,stdin);
 	n = write(socket_hold,buffer,strlen(buffer));//(reference to socket by file descriptor, the message written, write up to this length
 	//Check write success
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
       		exit(0);
 	}
-	memset(buffer,0,256);
+	memset(buffer,0,BUFFER_MAX_SIZE);
 	//Check read success
-	n = read(socket_hold,buffer,255);//(reference to socket by file descriptor, the message read, read up to this length)
+	n = read(socket_hold,buffer,BUFFER_MAX_SIZE);//(reference to socket by file descriptor, the message read, read up to this length)
 	if (n < 0){
 		fprintf(stderr,"Reading from socket fail");
       		exit(0);
