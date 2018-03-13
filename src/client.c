@@ -59,10 +59,26 @@ int main(int argc, char *argv[]){
 	}
 
 	/*Interface with the user*/
-	printf("Enter message sent to server: ");
+	//printf("Enter message sent to server: ");
+	printf("Enter requested file name: ");
 	memset(buffer,0,BUFFER_MAX_SIZE);
 	fgets(buffer,BUFFER_MAX_SIZE,stdin);
-	n = write(socket_hold,buffer,strlen(buffer));//(reference to socket by file descriptor, the message written, write up to this length
+
+	char *getrequest;
+	asprintf(&getrequest, "POST /%s HTTP/1.1\n", buffer);
+	asprintf(&getrequest, "%sHost: %s\n", getrequest, argv[1]);
+	asprintf(&getrequest, "%sConnection: keep-alive\n");
+	//asprintf(&getrequest, "%sConnection: close\n", getrequest);
+	asprintf(&getrequest, "%sContent-Length: 44\n", getrequest);
+	asprintf(&getrequest, "%sCache-Control: no-cache\n", getrequest);
+	asprintf(&getrequest, "%sOrigin: Server program info\n", getrequest);
+	asprintf(&getrequest, "%sUser-Agent: Server machine info\n", getrequest);
+	asprintf(&getrequest, "%sContent-Type: text/html\n", getrequest);
+	asprintf(&getrequest, "%s<html><body><h1>It works!</h1></body></html>\n", getrequest);
+
+	n = write(socket_hold,getrequest,strlen(getrequest));//(reference to socket by file descriptor, the message written, write up to this length
+
+	//n = write(socket_hold,buffer,strlen(buffer));//(reference to socket by file descriptor, the message written, write up to this length
 	//Check write success
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
