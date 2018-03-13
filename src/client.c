@@ -63,6 +63,7 @@ int main(int argc, char *argv[]){
 	printf("Enter requested file name: ");
 	memset(buffer,0,BUFFER_MAX_SIZE);
 	fgets(buffer,BUFFER_MAX_SIZE,stdin);
+	buffer[strcspn(buffer, "\n")] = 0;
 
 	char *getrequest;
 	asprintf(&getrequest, "POST /%s HTTP/1.1\n", buffer);
