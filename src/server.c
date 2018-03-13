@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
 			token++;
 			char filename[strlen(token)];
 			strcpy( filename, token);
-			printf("%s\n",filename);
+			//printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
 			//printf("%s\n",buffer);
 
@@ -81,7 +81,6 @@ int main(int argc, char *argv[]){
 			if(strlen(filename)>0) {
 				char *fileLocation;
 				asprintf(&fileLocation, "./%s", filename);
-				fprintf(stdout,"%s\n", fileLocation);
 				if(access(fileLocation, F_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
 
