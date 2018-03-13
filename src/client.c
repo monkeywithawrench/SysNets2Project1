@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 	asprintf(&getrequest, "%sOrigin: Server program info\n", getrequest);
 	asprintf(&getrequest, "%sUser-Agent: Server machine info\n", getrequest);
 	asprintf(&getrequest, "%sContent-Type: text/html\n", getrequest);
-	asprintf(&getrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", getrequest);
+	//asprintf(&getrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", getrequest);
 
 	n = write(socket_hold,getrequest,strlen(getrequest));//(reference to socket by file descriptor, the message written, write up to this length
 

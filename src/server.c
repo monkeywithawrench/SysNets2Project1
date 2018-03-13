@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 					//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 					//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
 					asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-					asprintf(&postrequest, "%s<html><body><h1>It works!</h1></body></html>\n", postrequest);
+					asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
 					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
 				//}
