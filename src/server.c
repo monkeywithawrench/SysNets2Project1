@@ -81,7 +81,8 @@ int main(int argc, char *argv[]){
 			if(strlen(filename)>0) {
 				char *fileLocation;
 				asprintf(&fileLocation, "./%s", filename);
-				if(access(fileLocation, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
+				fprintf(stdout,"%s\n", fileLocation);
+				if(access(fileLocation, F_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 					//file exists
 
 					char *postrequest;
