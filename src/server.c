@@ -121,6 +121,27 @@ int main(int argc, char *argv[]){
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 					}
+					else if(strcmp(fileExtension, "png")==0) { //IMAGES
+						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
+						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
+						asprintf(&postrequest, "%sContent-Type: image/png\n", postrequest);
+						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+					}
+					else if(strcmp(fileExtension, "gif")==0) { //IMAGES
+						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
+						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
+						asprintf(&postrequest, "%sContent-Type: image/gif\n", postrequest);
+						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+					}
+					else if(strcmp(fileExtension, "ico")==0) { //IMAGES
+						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
+						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
+						asprintf(&postrequest, "%sContent-Type: image/icon\n", postrequest);
+						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+					}
 					fprintf(stdout, "\n\nRESPONSE:\n%s",postrequest);
 					n = write(newsocket,postrequest, BUFFER_MAX_SIZE); //TODO this should probably be sizeOf(postrequest)
 				}
