@@ -72,7 +72,15 @@ int main(int argc, char *argv[]){
 			token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
 			token++;
 			char filename[strlen(token)];
-			strcpy( filename, token);
+			strcpy( filename, token); //filename now saved
+			delim = "."; //going for the file extension now
+			strcpy(temp, filename);
+			token = strtok(temp, delim);
+			token = strtok(NULL, delim);
+			char fileExtension[strlen(token)];
+			strcpy(fileExtension, token);
+			fprintf(stdout, "%s\n", fileExtension);
+
 			//printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
 			//printf("%s\n",buffer);
