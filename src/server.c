@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
 			token++;
 			char filename[strlen(token)];
 			strcpy( filename, token); //filename now saved
-			delim = "."; //going for the file extension now
+			strcpy(delim,"."); //going for the file extension now
 			strcpy(temp, filename);
 			token = strtok(temp, delim);
 			token = strtok(NULL, delim);
