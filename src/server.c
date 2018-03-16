@@ -157,6 +157,7 @@ char* readFile(char *fileLocation, char *readMode) {
 		fclose(fp);
 		if(strcmp(readMode, "r")==0)
 			buffer[fileSize] = '\0';
+		fprintf(stdout, "\n\n%s", buffer);
 		return buffer;
 	}
 
