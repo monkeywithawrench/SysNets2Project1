@@ -116,7 +116,7 @@ int main(int argc, char *argv[]){
 					}
 					else if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileContents)); //pls work
+						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 						asprintf(&postrequest, "%sContent-Type: image/jpeg\n", postrequest);
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
