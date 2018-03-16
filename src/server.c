@@ -12,6 +12,7 @@
 							 //Plus 256 isn't enough bytes anyways
 
 char* readFile(char *fileLocation, char *readMode);
+long getFileSize(char *fileLocation);
 
 //The server
 int main(int argc, char *argv[]){
@@ -115,7 +116,7 @@ int main(int argc, char *argv[]){
 					}
 					else if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, getFileSize(fileContents)); //pls work
 						asprintf(&postrequest, "%sContent-Type: image/jpeg\n", postrequest);
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
@@ -167,16 +168,19 @@ char* readFile(char *fileLocation, char *readMode) {
 			buffer[fileSize] = '\0';
 		return buffer;
 	}
-
-
-
-
-
-
-
 }
 
-
+long getFileSize(char *fileLocation) {
+	long fileSize;
+	FILE *fp = fopen(fileLocation, "rb");
+	if(fp) {
+		fseek(fp, 0, SEEK_END); //sets the file pointer to the end of the file
+		fileSize = ftell (fp); //gets the size of the file
+		fclose(fp);
+		return fileSize;
+	}
+	return 0; //if can't be opened, return fileSize of 0;
+}
 
 
 
