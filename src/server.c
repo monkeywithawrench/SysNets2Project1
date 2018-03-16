@@ -179,6 +179,7 @@ long getFileSize(char *fileLocation) {
 		fclose(fp);
 		return fileSize;
 	}
+	fprintf(syserr, "SOMETHING WENT WRONG! File can't be opened at getFileSize(%s)\n", fileLocation);
 	return 0; //if can't be opened, return fileSize of 0;
 }
 
