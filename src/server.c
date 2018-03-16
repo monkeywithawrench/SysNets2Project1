@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
 					//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 					//asprintf(&postrequest, "%sConnection: keep-alive\n");
 					//asprintf(&postrequest, "%sConnection: close\n", postrequest);
-					asprintf(&postrequest, "%sContent-Length: 44\n", postrequest); //TODO set this to actual file size
+					//asprintf(&postrequest, "%sContent-Length: 44\n", postrequest); //TODO set this to actual file size
 					//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
 					//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 					//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
@@ -107,8 +107,9 @@ int main(int argc, char *argv[]){
 					//	asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
 					if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
-						asprintf(&postrequest, "%sContent-Type: text/html\n\n", postrequest);
 						char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
+						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, sizeof(fileContents)); //pls work
+						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 					}
