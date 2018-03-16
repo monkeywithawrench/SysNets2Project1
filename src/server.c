@@ -108,7 +108,7 @@ int main(int argc, char *argv[]){
 
 					if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
 						char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, sizeof(fileContents)); //pls work
+						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
 						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
