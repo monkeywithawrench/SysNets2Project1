@@ -115,6 +115,13 @@ int main(int argc, char *argv[]){
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 					}
 					else if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
+						/* TODO
+						 * I think the best way to go about attaching the file will be taking the request,
+						 * getting the file length, allocating enough memory for both the header and the file
+						 * then using memset or a similar function to set blocks of the allocated memory.
+						 * This would avoid string issues likely caused by \0 chars and other unprintable chars,
+						 * I think. Maybe not.
+						 */
 						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
 						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 						asprintf(&postrequest, "%sContent-Type: image/jpeg\n", postrequest);
@@ -143,7 +150,8 @@ int main(int argc, char *argv[]){
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 					}
 					fprintf(stdout, "\n\nRESPONSE:\n%s",postrequest);
-					n = write(newsocket,postrequest, BUFFER_MAX_SIZE); //TODO this should probably be sizeOf(postrequest)
+					//n = write(newsocket,postrequest, BUFFER_MAX_SIZE); //TODO this should probably be sizeOf(postrequest)
+					n = write(newsocket,postrequest, strlen(postrequest));
 				}
 				else {
 					char *postrequest;
