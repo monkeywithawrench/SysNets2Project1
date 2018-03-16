@@ -11,6 +11,8 @@
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
 							 //Plus 256 isn't enough bytes anyways
 
+char* readFile(char *fileLocation, char *readMode);
+
 //The server
 int main(int argc, char *argv[]){
 	
@@ -79,14 +81,13 @@ int main(int argc, char *argv[]){
 			token = strtok(NULL, delim);
 			char fileExtension[strlen(token)];
 			strcpy(fileExtension, token);
-			fprintf(stdout, "%s\n", fileExtension);
 
 			//printf("%s\n",filename);
 			//printf("Here is the message: %s\n",buffer);
 			//printf("%s\n",buffer);
 
 
-			if(strlen(filename)>0) {
+			if(strlen(filename)>0 && strlen(fileExtension)>0) {
 				char *fileLocation;
 				asprintf(&fileLocation, "./%s", filename);
 				if(access(fileLocation, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
@@ -98,14 +99,26 @@ int main(int argc, char *argv[]){
 					//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 					//asprintf(&postrequest, "%sConnection: keep-alive\n");
 					//asprintf(&postrequest, "%sConnection: close\n", postrequest);
-					asprintf(&postrequest, "%sContent-Length: 44\n", postrequest);
+					asprintf(&postrequest, "%sContent-Length: 44\n", postrequest); //TODO set this to actual file size
 					//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
 					//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 					//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
-					asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-					asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
+					//	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+					//	asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
-					n = write(newsocket,postrequest, BUFFER_MAX_SIZE);
+					if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
+						asprintf(&postrequest, "%sContent-Type: text/html\n\n", postrequest);
+						char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
+						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+					}
+
+					n = write(newsocket,postrequest, BUFFER_MAX_SIZE); //TODO this should probably be sizeOf(postrequest)
+				}
+				else {
+					char *postrequest;
+					asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
+					//TODO rest of 404 error response
 				}
 			}
 
@@ -119,3 +132,49 @@ int main(int argc, char *argv[]){
 	}
 	return 0;
 }
+
+
+char* readFile(char *fileLocation, char *readMode) {
+
+	char *buffer = 0; //initializes buffer to be empty
+	long fileSize;
+	FILE *fp = fopen(fileLocation, readMode);
+	//We already checked with access() if we could read the file, but lets check again for redundancy
+	if(fp) {
+		fseek(fp, 0, SEEK_END); //sets the file pointer to the end of the file
+		fileSize = ftell (fp); //gets the size of the file
+		fseek(fp, 0, SEEK_SET); //sets the file pointer to the beginning of the file
+		if(strcmp(readMode, "r")==0) { //if we're reading it as text, we'll need an extra char in the array for a \0
+			buffer = malloc(fileSize+1); //+1 because \0
+			if(buffer) //check malloc success
+				fread(buffer, 1, fileSize, fp); //TODO check syscall for errors. Shouldn't be any, but....
+		}
+		else { //reading as binary
+			buffer = malloc(fileSize);
+				if(buffer) //check malloc success
+					fread(buffer, 1, fileSize, fp); //TODO check syscall for errors. Shouldn't be any, but....
+		}
+		fclose(fp);
+		if(strcmp(readMode, "r")==0)
+			buffer[fileSize] = '\0';
+		return buffer;
+	}
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
