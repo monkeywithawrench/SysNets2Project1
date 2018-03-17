@@ -13,7 +13,8 @@
 
 char* readFile(char *fileLocation, char *readMode);
 long getFileSize(char *fileLocation);
-int return404(int newsocket);
+void return404(int newsocket); //Responds to the get request with a 404 page. Client dropped the ball
+void return500(int newsocket); //Responds to the get request with a 404 page. Server dropped the ball
 
 //The server
 int main(int argc, char *argv[]){
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]){
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);
 	if (socket_hold < 0){
 		fprintf(stderr,"Opening socket failed");
-      		exit(1);
+		exit(1);
 	}
 
 	//Start socketing process
@@ -44,15 +45,13 @@ int main(int argc, char *argv[]){
 	//Check binding success
 	if (bind(socket_hold, (struct sockaddr *) &server_address,sizeof(server_address)) < 0){//the socket, its cast, the size
 		fprintf(stderr,"Binding failed");
-     	 	exit(1);
+		exit(1);
 	}
 
 	int pid; //MULTITHREADING, FK YEAH!!!
 	listen(socket_hold,5);//(reference to file descriptor, max queue
 	client = sizeof(client_address);
 	while(1==1) { //while true (runs forever)
-		//listen(socket_hold,5);//(reference to file descriptor, max queue
-		//client = sizeof(client_address);
 
 		newsocket = accept(socket_hold,(struct sockaddr *) &client_address, &client);//(file descriptor socketed-binded-listened,pointer to sockaddr struct, sizeof pointed struct)
 
@@ -83,15 +82,23 @@ int main(int argc, char *argv[]){
 				char *token;
 				char delim[2] = " ";
 				token = strtok(temp, delim);  // first call returns pointer to first part of user_input separated by delim
+				if(token==NULL) //error checking
+					return404(newsocket);
 				/*TODO: seg fault, no space in string triggers it when sending a message*/
 				token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
+				if(token==NULL) //error checking
+					return404(newsocket);
 				token++;
 				char filename[strlen(token)];
 				strcpy( filename, token); //filename now saved
 				strcpy(delim,"."); //going for the file extension now
 				strcpy(temp, filename);
 				token = strtok(temp, delim); //this part is file name without extension
+				if(token==NULL) //error checking
+					return404(newsocket);
 				token = strtok(NULL, delim); //YEEEEES, THIS IS THE GOOD STUFF!
+				if(token==NULL) //error checking
+					return404(newsocket);
 				char fileExtension[strlen(token)];
 				strcpy(fileExtension, token); //ALL YOUR TOKENS ARE BELONG TO MEEEE!
 
@@ -120,6 +127,8 @@ int main(int argc, char *argv[]){
 
 						if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
 							char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
+							if(fileContents==NULL)
+								return500(newsocket); //TODO make this a 500 error instead
 							asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
 							asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
@@ -128,6 +137,8 @@ int main(int argc, char *argv[]){
 						}
 						else {
 							char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
+							if(fileContents==NULL)
+								return500(newsocket); //TODO make this a 500 error instead
 							fileSize = getFileSize(fileLocation);
 							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 							fprintf(stderr, "FileSize: %ld\n", fileSize);
@@ -160,11 +171,11 @@ int main(int argc, char *argv[]){
 						}
 					}
 					else {
-						n = return404(newsocket);
+						return404(newsocket);
 					}
 				}
 				else {
-					n = return404(newsocket);
+					return404(newsocket);
 				}
 
 				//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
@@ -209,6 +220,8 @@ char* readFile(char *fileLocation, char *readMode) {
 			buffer[fileSize] = '\0';
 		return buffer;
 	}
+	else
+		return NULL;
 }
 
 long getFileSize(char *fileLocation) {
@@ -225,7 +238,7 @@ long getFileSize(char *fileLocation) {
 }
 
 
-int return404(int newsocket) {
+void return404(int newsocket) {
 	char *postrequest;
 	asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
 	char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
@@ -233,11 +246,30 @@ int return404(int newsocket) {
 	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-	return write(newsocket,postrequest, strlen(postrequest));
+	int n = write(newsocket,postrequest, strlen(postrequest));
+	if (n < 0){
+		fprintf(stderr,"Writing to socket fail");
+		exit(1);
+	}
+	exit(0);
 }
 
 
-
+void return500(int newsocket) { //TODO change this to actually return a 500 error page
+	char *postrequest;
+	asprintf(&postrequest, "HTTP/1.1 500 Internal Server Error\n");
+	char *fileContents = readFile("./500.html", "r"); //"r" to read the file as text
+	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+	int n = write(newsocket,postrequest, strlen(postrequest));
+	if (n < 0){
+		fprintf(stderr,"Writing to socket fail");
+		exit(1);
+	}
+	exit(0);
+}
 
 
 
