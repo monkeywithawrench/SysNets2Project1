@@ -78,14 +78,10 @@ int main(int argc, char *argv[]){
 			strcpy( filename, token); //filename now saved
 			strcpy(delim,"."); //going for the file extension now
 			strcpy(temp, filename);
-			token = strtok(temp, delim);
-			token = strtok(NULL, delim);
+			token = strtok(temp, delim); //this part is file name without extension
+			token = strtok(NULL, delim); //YEEEEES, THIS IS THE GOOD STUFF!
 			char fileExtension[strlen(token)];
-			strcpy(fileExtension, token);
-
-			//printf("%s\n",filename);
-			//printf("Here is the message: %s\n",buffer);
-			//printf("%s\n",buffer);
+			strcpy(fileExtension, token); //ALL YOUR TOKENS ARE BELONG TO MEEEE!
 
 
 			if(strlen(filename)>0 && strlen(fileExtension)>0) {
@@ -124,13 +120,7 @@ int main(int argc, char *argv[]){
 						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 						fprintf(stderr, "FileSize: %ld\n", fileSize);
 						//fprintf(stderr, "%s", fileContents);
-						/* TODO
-						 * I think the best way to go about attaching the file will be taking the request,
-						 * getting the file length, allocating enough memory for both the header and the file
-						 * then using memset or a similar function to set blocks of the allocated memory.
-						 * This would avoid string issues likely caused by \0 chars and other unprintable chars,
-						 * I think. Maybe not.
-						 */
+
 						if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 							asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
 						}
