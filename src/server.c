@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 						//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 						//asprintf(&postrequest, "%sConnection: keep-alive\n");
 						//asprintf(&postrequest, "%sConnection: close\n", postrequest);
-						//asprintf(&postrequest, "%sContent-Length: 44\n", postrequest); //TODO set this to actual file size
+						//asprintf(&postrequest, "%sContent-Length: 44\n", postrequest);
 						//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
 						//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 						//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
@@ -161,7 +161,6 @@ int main(int argc, char *argv[]){
 					else {
 						char *postrequest;
 						asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
-						//TODO rest of 404 error response
 						char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
 						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
 						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
