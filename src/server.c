@@ -107,14 +107,22 @@ int main(int argc, char *argv[]){
 					//	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 					//	asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
+
+					long fileSize;
+
 					if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
 						char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
 						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
 						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+						n = write(newsocket,postrequest, strlen(postrequest));
 					}
-					else if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
+					else {
+						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
+						fileSize = getFileSize(fileLocation);
+						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
+
 						/* TODO
 						 * I think the best way to go about attaching the file will be taking the request,
 						 * getting the file length, allocating enough memory for both the header and the file
@@ -122,36 +130,35 @@ int main(int argc, char *argv[]){
 						 * This would avoid string issues likely caused by \0 chars and other unprintable chars,
 						 * I think. Maybe not.
 						 */
-						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-						asprintf(&postrequest, "%sContent-Type: image/jpeg\n", postrequest);
-						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
+							asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
+							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						}
+						else if(strcmp(fileExtension, "png")==0) { //IMAGES
+							asprintf(&postrequest, "%sContent-Type: image/png\n\n", postrequest);
+							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						}
+						else if(strcmp(fileExtension, "gif")==0) { //IMAGES
+							asprintf(&postrequest, "%sContent-Type: image/gif\n\n", postrequest);
+							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						}
+						else if(strcmp(fileExtension, "ico")==0) { //IMAGES
+							asprintf(&postrequest, "%sContent-Type: image/icon\n\n", postrequest);
+							//asprintf(&postrequest, "%s%s", postrequest, fileContents); //append file contents to postrequest
+						}
+
+						long headerSize = strlen(postrequest);
+						//asprintf(&postrequest, "%s%s", postrequest, fileContents); //append file contents to postrequest
+						char *response = malloc(headerSize + fileSize);
+						memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
+						memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
+
+						fprintf(stdout, "\n\nRESPONSE:\n%s", response);
+						//n = write(newsocket,postrequest, headerSize + fileSize);
+						n = write(newsocket, response, headerSize + fileSize);
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+						free(response); //free the response too
 					}
-					else if(strcmp(fileExtension, "png")==0) { //IMAGES
-						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-						asprintf(&postrequest, "%sContent-Type: image/png\n", postrequest);
-						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
-						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-					}
-					else if(strcmp(fileExtension, "gif")==0) { //IMAGES
-						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-						asprintf(&postrequest, "%sContent-Type: image/gif\n", postrequest);
-						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
-						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-					}
-					else if(strcmp(fileExtension, "ico")==0) { //IMAGES
-						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-						asprintf(&postrequest, "%sContent-Type: image/icon\n", postrequest);
-						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
-						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-					}
-					fprintf(stdout, "\n\nRESPONSE:\n%s",postrequest);
-					//n = write(newsocket,postrequest, BUFFER_MAX_SIZE); //TODO this should probably be sizeOf(postrequest)
-					n = write(newsocket,postrequest, strlen(postrequest));
 				}
 				else {
 					char *postrequest;
