@@ -162,6 +162,12 @@ int main(int argc, char *argv[]){
 						char *postrequest;
 						asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
 						//TODO rest of 404 error response
+						char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
+						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+						n = write(newsocket,postrequest, strlen(postrequest));
 					}
 				}
 
