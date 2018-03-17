@@ -123,7 +123,7 @@ int main(int argc, char *argv[]){
 						fileSize = getFileSize(fileLocation);
 						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 						fprintf(stderr, "FileSize: %ld\n", fileSize);
-						fprintf(stderr, "%s", fileContents);
+						//fprintf(stderr, "%s", fileContents);
 						/* TODO
 						 * I think the best way to go about attaching the file will be taking the request,
 						 * getting the file length, allocating enough memory for both the header and the file
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]){
 						memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
 						memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
 
-						fprintf(stdout, "\n\nRESPONSE:\n%s", response);
+						//fprintf(stdout, "\n\nRESPONSE:\n%s", response);
 						//n = write(newsocket,postrequest, headerSize + fileSize);
 						n = write(newsocket, response, headerSize + fileSize);
 						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
