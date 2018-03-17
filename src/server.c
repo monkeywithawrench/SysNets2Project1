@@ -13,6 +13,7 @@
 
 char* readFile(char *fileLocation, char *readMode);
 long getFileSize(char *fileLocation);
+int return404(int newsocket);
 
 //The server
 int main(int argc, char *argv[]){
@@ -159,15 +160,11 @@ int main(int argc, char *argv[]){
 						}
 					}
 					else {
-						char *postrequest;
-						asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
-						char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
-						asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
-						asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-						asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
-						free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-						n = write(newsocket,postrequest, strlen(postrequest));
+						n = return404(newsocket);
 					}
+				}
+				else {
+					n = return404(newsocket);
 				}
 
 				//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
@@ -228,7 +225,16 @@ long getFileSize(char *fileLocation) {
 }
 
 
-
+int return404(int newsocket) {
+	char *postrequest;
+	asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
+	char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
+	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
+	return write(newsocket,postrequest, strlen(postrequest));
+}
 
 
 
