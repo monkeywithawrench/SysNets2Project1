@@ -122,7 +122,8 @@ int main(int argc, char *argv[]){
 						char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
 						fileSize = getFileSize(fileLocation);
 						asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-
+						fprintf(stderr, "FileSize: %ld\n", fileSize);
+						fprintf(stderr, "%s", fileContents);
 						/* TODO
 						 * I think the best way to go about attaching the file will be taking the request,
 						 * getting the file length, allocating enough memory for both the header and the file
@@ -132,19 +133,15 @@ int main(int argc, char *argv[]){
 						 */
 						if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 							asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
-							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						}
 						else if(strcmp(fileExtension, "png")==0) { //IMAGES
 							asprintf(&postrequest, "%sContent-Type: image/png\n\n", postrequest);
-							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						}
 						else if(strcmp(fileExtension, "gif")==0) { //IMAGES
 							asprintf(&postrequest, "%sContent-Type: image/gif\n\n", postrequest);
-							//asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 						}
 						else if(strcmp(fileExtension, "ico")==0) { //IMAGES
 							asprintf(&postrequest, "%sContent-Type: image/icon\n\n", postrequest);
-							//asprintf(&postrequest, "%s%s", postrequest, fileContents); //append file contents to postrequest
 						}
 
 						long headerSize = strlen(postrequest);
