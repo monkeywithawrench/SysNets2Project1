@@ -7,6 +7,14 @@
 #include <netinet/in.h>     //Structures to store address information
 #include <unistd.h>         //Needed for access() to check file information
 
+/**
+* Listen for the client, send request, and make available its services
+*
+* @author Jeffrey Morton
+* @author Thanh Tran
+* @date 03/19/2018
+* @info Course COP4635
+*/
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
 							 //Plus 256 isn't enough bytes anyways
@@ -48,7 +56,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
-	int pid; //MULTITHREADING, FK YEAH!!!
+	int pid; //MULTITHREADING, OH YEAH!!!
 	listen(socket_hold,5);//(reference to file descriptor, max queue
 	client = sizeof(client_address);
 	while(1==1) { //while true (runs forever)
@@ -84,7 +92,6 @@ int main(int argc, char *argv[]){
 				token = strtok(temp, delim);  // first call returns pointer to first part of user_input separated by delim
 				if(token==NULL) //error checking
 					return404(newsocket);
-				/*TODO: seg fault, no space in string triggers it when sending a message*/
 				token = strtok(NULL, delim);  // every call with NULL uses saved user_input value and returns next substring
 				if(token==NULL) //error checking
 					return404(newsocket);
@@ -177,9 +184,6 @@ int main(int argc, char *argv[]){
 				else {
 					return404(newsocket);
 				}
-
-				//n = write(newsocket,"Message is up, thanks\n",BUFFER_MAX_SIZE);
-
 				if (n < 0){
 					fprintf(stderr,"Writing to socket fail");
 					exit(1);
@@ -193,8 +197,14 @@ int main(int argc, char *argv[]){
 	}
 	return 0;
 }
-
-
+/**
+ * Open the file
+ *
+ *@param fileLocation the file path
+ *@param readMode the file mode of operation
+ *
+ *@return  the file that was opened
+ */
 char* readFile(char *fileLocation, char *readMode) {
 
 	char *buffer = 0; //initializes buffer to be empty
@@ -223,7 +233,13 @@ char* readFile(char *fileLocation, char *readMode) {
 	else
 		return NULL;
 }
-
+/**
+ * Measure the file length
+ *
+ *@param fileLocation the file path
+ *
+ *@return  file size
+ */
 long getFileSize(char *fileLocation) {
 	long fileSize;
 	FILE *fp = fopen(fileLocation, "rb");
@@ -236,8 +252,13 @@ long getFileSize(char *fileLocation) {
 	fprintf(stderr, "SOMETHING WENT WRONG! File can't be opened at getFileSize(%s)\n", fileLocation);
 	return 0; //if can't be opened, return fileSize of 0;
 }
-
-
+/**
+ * Invalid page function
+ *
+ *@param newsocket socket current status
+ *
+ *@return  the fail socket
+ */
 void return404(int newsocket) {
 	char *postrequest;
 	asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
