@@ -5,11 +5,18 @@
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
-#include <netdb.h>
+#include <netdb.h>          //Definitions for network's functions
 
+/**
+* Access the server, send a response, and acquire services
+*
+* @author Jeffrey Morton
+* @author Thanh Tran
+* @date 03/19/2018
+* @info Course COP4635
+*/
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
-							 //Plus 256 isn't enough bytes anyways
 
 //The client
 int main(int argc, char *argv[]){
@@ -27,10 +34,10 @@ int main(int argc, char *argv[]){
 
 	//Check for valid port 
 	port = atoi(argv[2]);
-        /*if(portno < 60001 || portno > 60099){    
+        if(port < 60001 || port > 60099){    
 		fprintf(stderr,"Invalid port number");
 		exit(0);
-	}*/
+	}
 
 	//Check for socket
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);//return file descriptor, else -1
@@ -59,7 +66,6 @@ int main(int argc, char *argv[]){
 	}
 
 	/*Interface with the user*/
-	//printf("Enter message sent to server: ");
 	printf("Enter requested file name: ");
 	memset(buffer,0,BUFFER_MAX_SIZE);
 	fgets(buffer,BUFFER_MAX_SIZE,stdin);
@@ -79,13 +85,13 @@ int main(int argc, char *argv[]){
 
 	n = write(socket_hold,getrequest,strlen(getrequest));//(reference to socket by file descriptor, the message written, write up to this length
 
-	//n = write(socket_hold,buffer,strlen(buffer));//(reference to socket by file descriptor, the message written, write up to this length
 	//Check write success
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
       		exit(0);
 	}
 	memset(buffer,0,BUFFER_MAX_SIZE);
+
 	//Check read success
 	n = read(socket_hold,buffer,BUFFER_MAX_SIZE);//(reference to socket by file descriptor, the message read, read up to this length)
 	if (n < 0){
