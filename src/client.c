@@ -34,10 +34,10 @@ int main(int argc, char *argv[]){
 
 	//Check for valid port 
 	port = atoi(argv[2]);
-        if(port < 60001 || port > 60099){    
+        /*if(port < 60001 || port > 60099){    
 		fprintf(stderr,"Invalid port number");
 		exit(0);
-	}
+	}*/
 
 	//Check for socket
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);//return file descriptor, else -1
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
 	//Check the connection
 	int checkConnect = connect(socket_hold,(struct sockaddr *)&server_address,sizeof(server_address));//(reference to socket by file descriptor,the specified address, address space of socket)
 	if ( checkConnect < 0){
-		fprintf(stderr,"Failed connectiopn");
+		fprintf(stderr,"Failed connection\n");
       		exit(0);
 	}
 
