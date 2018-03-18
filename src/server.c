@@ -8,16 +8,16 @@
 #include <unistd.h>         //Needed for access() to check file information
 
 /**
-* Listen for the client, send request, and make available its services
-*
-* @author Jeffrey Morton
-* @author Thanh Tran
-* @date 03/19/2018
-* @info Course COP4635
-*/
+ * Listen for the client, send request, and make available its services
+ *
+ * @author Jeffrey Morton
+ * @author Thanh Tran
+ * @date 03/19/2018
+ * @info Course COP4635
+ */
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
-							
+
 
 char* readFile(char *fileLocation, char *readMode);
 long getFileSize(char *fileLocation);
@@ -26,7 +26,7 @@ void return500(int newsocket);
 
 //The server
 int main(int argc, char *argv[]){
-	
+
 	struct sockaddr_in server_address, client_address;
 	int socket_hold, newsocket, port, client, n;
 	char buffer[BUFFER_MAX_SIZE];
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"Binding failed");
 		exit(1);
 	}
-	
+
 	fprintf(stderr,"\nServer commence\n\nReadying...\n\nWaiting and listening for client request...\n\n");
 
 	//MULTITHREADING
@@ -120,17 +120,13 @@ int main(int argc, char *argv[]){
 						//file exists
 
 						char *postrequest;
-						//asprintf(&postrequest, "POST /%s HTTP/1.1\n", filename);
 						asprintf(&postrequest, "HTTP/1.1 200 OK\n");
 						//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 						//asprintf(&postrequest, "%sConnection: keep-alive\n");
 						//asprintf(&postrequest, "%sConnection: close\n", postrequest);
-						//asprintf(&postrequest, "%sContent-Length: 44\n", postrequest);
 						//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
 						//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 						//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
-						//asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-						//asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
 
 						long fileSize;
@@ -138,7 +134,7 @@ int main(int argc, char *argv[]){
 						if(strcmp(fileExtension, "html")==0 || strcmp(fileExtension, "htm")==0 || strcmp(fileExtension, "txt")==0 ) {
 							char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
 							if(fileContents==NULL)
-								return500(newsocket); //TODO make this a 500 error instead
+								return500(newsocket);
 							asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
 							asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
@@ -149,16 +145,9 @@ int main(int argc, char *argv[]){
 						else {
 							char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
 							if(fileContents==NULL)
-								return500(newsocket); //TODO make this a 500 error instead
+								return500(newsocket);
 							fileSize = getFileSize(fileLocation);
-<<<<<<< HEAD
-							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-							//fprintf(stderr, "FileSize: %ld\n", fileSize);
-=======
 							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation));
-							fprintf(stderr, "FileSize: %ld\n", fileSize);
->>>>>>> branch 'Develop' of https://github.com/monkeywithawrench/SysNets2Project1
-							//fprintf(stderr, "%s", fileContents);
 
 							if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 								asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
@@ -174,13 +163,10 @@ int main(int argc, char *argv[]){
 							}
 
 							long headerSize = strlen(postrequest);
-							//asprintf(&postrequest, "%s%s", postrequest, fileContents); //append file contents to postrequest
 							char *response = malloc(headerSize + fileSize);
 							memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
 							memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
 
-							//fprintf(stdout, "\n\nRESPONSE:\n%s", response);
-							//n = write(newsocket,postrequest, headerSize + fileSize);
 							n = write(newsocket, response, headerSize + fileSize);
 							fprintf(stdout,"%s\n\n",response);
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
@@ -232,8 +218,8 @@ char* readFile(char *fileLocation, char *readMode) {
 		}
 		else { //reading as binary
 			buffer = malloc(fileSize);
-				if(buffer) //check malloc success
-					fread(buffer, 1, fileSize, fp); //TODO check syscall for errors. Shouldn't be any, but....
+			if(buffer) //check malloc success
+				fread(buffer, 1, fileSize, fp); //TODO check syscall for errors. Shouldn't be any, but....
 		}
 		fclose(fp);
 		if(strcmp(readMode, "r")==0)
@@ -243,6 +229,7 @@ char* readFile(char *fileLocation, char *readMode) {
 	else
 		return NULL;
 }
+
 /**
  * Measure the file length
  *
@@ -262,8 +249,10 @@ long getFileSize(char *fileLocation) {
 	fprintf(stderr, "SOMETHING WENT WRONG! File can't be opened at getFileSize(%s)\n", fileLocation);
 	return 0; //if can't be opened, return fileSize of 0;
 }
+
 /**
- * Invalid 400 page function,client drops
+ * Invalid 400 page function. Responds with a 500 internal server error header
+ * and corresponding 500.html page
  *
  *@param newsocket socket current status
  */
@@ -283,13 +272,14 @@ void return404(int newsocket) {
 	}
 	exit(0);
 }
+
 /**
- * Invalid 500 page function, server drops
+ * Invalid 500 page function. Responds with a 500 internal server error header
+ * and corresponding 500.html page
  *
  *@param newsocket socket current status
  */
-
-void return500(int newsocket) { //TODO change this to actually return a 500 error page
+void return500(int newsocket) {
 	char *postrequest;
 	asprintf(&postrequest, "HTTP/1.1 500 Internal Server Error\n");
 	char *fileContents = readFile("./500.html", "r"); //"r" to read the file as text
