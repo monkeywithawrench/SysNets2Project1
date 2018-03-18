@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"Invalid port number");
 		exit(0);
 	}*/
-
+	while(1 == 1){
 	//Check for socket
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);//return file descriptor, else -1
 	if (socket_hold < 0 ){
@@ -64,11 +64,21 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"Failed connection\n");
       		exit(0);
 	}
-
+	
+	
 	/*Interface with the user*/
-	printf("Enter requested file name: ");
+	printf("Enter requested file name(else type cancel to exit): ");
 	memset(buffer,0,BUFFER_MAX_SIZE);
 	fgets(buffer,BUFFER_MAX_SIZE,stdin);
+
+	//Take user request, until cancel
+	int check = 1;
+	char hold[] = "cancel\n";
+	check = strcmp(buffer,hold);
+	if( check == 0){
+		printf("\nThe client has stopped\n");
+		exit(0);
+	}
 	buffer[strcspn(buffer, "\n")] = 0;
 
 	char *getrequest;
@@ -99,6 +109,6 @@ int main(int argc, char *argv[]){
       		exit(0);
 	}
 	printf("%s\n",buffer);
-
+  	}//part of while loop
 	return 0;
 }
