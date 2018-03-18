@@ -141,6 +141,7 @@ int main(int argc, char *argv[]){
 							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 							n = write(newsocket,postrequest, strlen(postrequest));
+							fprintf(stdout,"%s\n\n",postrequest);
 						}
 						else {
 							char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
@@ -148,7 +149,7 @@ int main(int argc, char *argv[]){
 								return500(newsocket); //TODO make this a 500 error instead
 							fileSize = getFileSize(fileLocation);
 							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
-							fprintf(stderr, "FileSize: %ld\n", fileSize);
+							//fprintf(stderr, "FileSize: %ld\n", fileSize);
 							//fprintf(stderr, "%s", fileContents);
 
 							if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
@@ -173,6 +174,7 @@ int main(int argc, char *argv[]){
 							//fprintf(stdout, "\n\nRESPONSE:\n%s", response);
 							//n = write(newsocket,postrequest, headerSize + fileSize);
 							n = write(newsocket, response, headerSize + fileSize);
+							fprintf(stdout,"%s\n\n",response);
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 							free(response); //free the response too
 						}
@@ -268,6 +270,7 @@ void return404(int newsocket) {
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 	int n = write(newsocket,postrequest, strlen(postrequest));
+	fprintf(stdout,"%s\n\n",postrequest);
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
@@ -285,6 +288,7 @@ void return500(int newsocket) { //TODO change this to actually return a 500 erro
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 	int n = write(newsocket,postrequest, strlen(postrequest));
+	fprintf(stdout,"%s\n\n",postrequest);
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
