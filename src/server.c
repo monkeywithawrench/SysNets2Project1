@@ -17,12 +17,12 @@
 */
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
-							 //Plus 256 isn't enough bytes anyways
+							
 
 char* readFile(char *fileLocation, char *readMode);
 long getFileSize(char *fileLocation);
-void return404(int newsocket); //Responds to the get request with a 404 page. Client dropped the ball
-void return500(int newsocket); //Responds to the get request with a 404 page. Server dropped the ball
+void return404(int newsocket); 
+void return500(int newsocket); 
 
 //The server
 int main(int argc, char *argv[]){
@@ -55,9 +55,12 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"Binding failed");
 		exit(1);
 	}
+	
+	fprintf(stderr,"\nServer commence\n\nReadying...\n\nWaiting and listening for client request...\n\n");
 
-	int pid; //MULTITHREADING, OH YEAH!!!
-	listen(socket_hold,5);//(reference to file descriptor, max queue
+	//MULTITHREADING
+	int pid; 
+	listen(socket_hold,5);//(reference to file descriptor, max queue)
 	client = sizeof(client_address);
 	while(1==1) { //while true (runs forever)
 
@@ -126,8 +129,8 @@ int main(int argc, char *argv[]){
 						//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
 						//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
 						//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
-						//	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-						//	asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
+						//asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
+						//asprintf(&postrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", postrequest);
 
 
 						long fileSize;
@@ -148,8 +151,13 @@ int main(int argc, char *argv[]){
 							if(fileContents==NULL)
 								return500(newsocket); //TODO make this a 500 error instead
 							fileSize = getFileSize(fileLocation);
+<<<<<<< HEAD
 							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation)); //pls work
 							//fprintf(stderr, "FileSize: %ld\n", fileSize);
+=======
+							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation));
+							fprintf(stderr, "FileSize: %ld\n", fileSize);
+>>>>>>> branch 'Develop' of https://github.com/monkeywithawrench/SysNets2Project1
 							//fprintf(stderr, "%s", fileContents);
 
 							if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
@@ -194,7 +202,7 @@ int main(int argc, char *argv[]){
 			exit(0); //closing this thread
 		}
 		else {
-			close(newsocket); //closing this
+			close(newsocket); //closing the socket
 		}
 	}
 	return 0;
@@ -255,11 +263,9 @@ long getFileSize(char *fileLocation) {
 	return 0; //if can't be opened, return fileSize of 0;
 }
 /**
- * Invalid page function
+ * Invalid 400 page function,client drops
  *
  *@param newsocket socket current status
- *
- *@return  the fail socket
  */
 void return404(int newsocket) {
 	char *postrequest;
@@ -277,7 +283,11 @@ void return404(int newsocket) {
 	}
 	exit(0);
 }
-
+/**
+ * Invalid 500 page function, server drops
+ *
+ *@param newsocket socket current status
+ */
 
 void return500(int newsocket) { //TODO change this to actually return a 500 error page
 	char *postrequest;
