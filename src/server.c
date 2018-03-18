@@ -121,6 +121,7 @@ int main(int argc, char *argv[]){
 
 						char *postrequest;
 						asprintf(&postrequest, "HTTP/1.1 200 OK\n");
+						//THESE ARE NOT NEEDED FOR RESPONSES, BUT THEY ARE HERE FOR REFERENCE
 						//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
 						//asprintf(&postrequest, "%sConnection: keep-alive\n");
 						//asprintf(&postrequest, "%sConnection: close\n", postrequest);
