@@ -140,7 +140,7 @@ int main(int argc, char *argv[]){
 							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 							n = write(newsocket,postrequest, strlen(postrequest));
-							fprintf(stdout,"%s\n\n\n",postrequest);
+							fprintf(stdout,"\n%s\n\n",postrequest);
 						}
 						else {
 							char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]){
 							memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
 
 							n = write(newsocket, response, headerSize + fileSize);
-							fprintf(stdout,"%s\n\n\n",response);
+							fprintf(stdout,"\n%s\n\n",response);
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 							free(response); //free the response too
 						}
@@ -265,7 +265,7 @@ void return404(int newsocket) {
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 	int n = write(newsocket,postrequest, strlen(postrequest));
-	fprintf(stdout,"%s\n\n\n",postrequest);
+	fprintf(stdout,"\n%s\n\n",postrequest);
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
@@ -288,7 +288,7 @@ void return500(int newsocket) {
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 	int n = write(newsocket,postrequest, strlen(postrequest));
-	fprintf(stdout,"%s\n\n\n",postrequest);
+	fprintf(stdout,"\n%s\n\n",postrequest);
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
