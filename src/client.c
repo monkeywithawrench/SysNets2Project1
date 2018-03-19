@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 	
 	
 	/*Interface with the user*/
-	printf("Enter requested file name(else type cancel to exit): ");
+	printf("\n\nEnter requested file name(else type cancel to exit): ");
 	memset(buffer,0,BUFFER_MAX_SIZE);
 	fgets(buffer,BUFFER_MAX_SIZE,stdin);
 
