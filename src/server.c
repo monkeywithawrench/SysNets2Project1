@@ -5,7 +5,7 @@
 #include <sys/socket.h>     //API and definitions for the sockets
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
-#include <unistd.h>         //Needed for access() to check file information
+#include <unistd.h>         //Needed for access() to check file information, as well as read() and write()
 
 /**
  * Listen for the client, send request, and make available its services

@@ -6,6 +6,7 @@
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
 #include <netdb.h>          //Definitions for network's functions
+#include <unistd.h>			//Needed for read() and write()
 
 /**
 * Access the server, send a response, and acquire services
