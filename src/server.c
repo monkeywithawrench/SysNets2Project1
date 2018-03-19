@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in server_address, client_address;
 	int socket_hold, newsocket, port, n;
 	char buffer[BUFFER_MAX_SIZE];
-	socklen_t *client;
+	size_t client;
 
 	//exe >> port#
 	if (argc < 2){
