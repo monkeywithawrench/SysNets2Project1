@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
 				if(token==NULL) //error checking
 					return404(newsocket);
 				token++;
-				char filename[strlen(token)];
+				char filename[strlen(token)+1]; //+1 for \0
 				strcpy( filename, token); //filename now saved
 				strcpy(delim,"."); //going for the file extension now
 				strcpy(temp, filename);
@@ -109,25 +109,25 @@ int main(int argc, char *argv[]){
 				token = strtok(NULL, delim); //YEEEEES, THIS IS THE GOOD STUFF!
 				if(token==NULL) //error checking
 					return404(newsocket);
-				char fileExtension[strlen(token)];
+				char fileExtension[strlen(token)+1]; //+1 for \0
 				strcpy(fileExtension, token); //ALL YOUR TOKENS ARE BELONG TO MEEEE!
 
 
 				if(strlen(filename)>0 && strlen(fileExtension)>0) {
-					char *fileLocation;
-					asprintf(&fileLocation, "./%s", filename);
+					char fileLocation[strlen(filename)+3]; //2 for the "./\0" being appended in the next line.
+					snprintf(fileLocation, strlen(filename)+3, "./%s", filename);
 					if(access(fileLocation, R_OK) != -1) {  //F_OK checks if file exists, R_OK checks if file can be read
 						//file exists
 
-						char *postrequest;
-						asprintf(&postrequest, "HTTP/1.1 200 OK\n");
+						char postrequest[BUFFER_MAX_SIZE];
+						snprintf(postrequest, BUFFER_MAX_SIZE, "HTTP/1.1 200 OK\n");
 						//THESE ARE NOT NEEDED FOR RESPONSES, BUT THEY ARE HERE FOR REFERENCE
-						//asprintf(&postrequest, "%sHost: notarealaddress\n", postrequest);
-						//asprintf(&postrequest, "%sConnection: keep-alive\n");
-						//asprintf(&postrequest, "%sConnection: close\n", postrequest);
-						//asprintf(&postrequest, "%sCache-Control: no-cache\n", postrequest);
-						//asprintf(&postrequest, "%sOrigin: Server program info\n", postrequest);
-						//asprintf(&postrequest, "%sUser-Agent: Server machine info\n", postrequest);
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sHost: notarealaddress\n", postrequest);
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sConnection: keep-alive\n");
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sConnection: close\n", postrequest);
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sCache-Control: no-cache\n", postrequest);
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sOrigin: Server program info\n", postrequest);
+						//snprintf(postrequest, BUFFER_MAX_SIZE, "%sUser-Agent: Server machine info\n", postrequest);
 
 
 						long fileSize;
@@ -136,31 +136,38 @@ int main(int argc, char *argv[]){
 							char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
 							if(fileContents==NULL)
 								return500(newsocket);
-							asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
-							asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+							fileSize = getFileSize(fileLocation);
+							snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+							snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: text/html\n\n", postrequest);
+
+							long headerSize = strlen(postrequest);
+							char *response = malloc(headerSize + fileSize);
+							memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
+							memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
+
+							n = write(newsocket, response, headerSize + fileSize);
+							fprintf(stdout,"%s\n\n\n",response);
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-							n = write(newsocket,postrequest, strlen(postrequest));
-							fprintf(stdout,"%s\n\n\n",postrequest);
+							free(response); //free the response too
 						}
 						else {
 							char *fileContents = readFile(fileLocation, "rb"); //"rb" to read the file as text
 							if(fileContents==NULL)
 								return500(newsocket);
 							fileSize = getFileSize(fileLocation);
-							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation));
+							snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation));
 
 							if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
-								asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
+								snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: image/jpeg\n\n", postrequest);
 							}
 							else if(strcmp(fileExtension, "png")==0) { //IMAGES
-								asprintf(&postrequest, "%sContent-Type: image/png\n\n", postrequest);
+								snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: image/png\n\n", postrequest);
 							}
 							else if(strcmp(fileExtension, "gif")==0) { //IMAGES
-								asprintf(&postrequest, "%sContent-Type: image/gif\n\n", postrequest);
+								snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: image/gif\n\n", postrequest);
 							}
 							else if(strcmp(fileExtension, "ico")==0) { //IMAGES
-								asprintf(&postrequest, "%sContent-Type: image/icon\n\n", postrequest);
+								snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: image/icon\n\n", postrequest);
 							}
 
 							long headerSize = strlen(postrequest);
@@ -258,15 +265,24 @@ long getFileSize(char *fileLocation) {
  *@param newsocket socket current status
  */
 void return404(int newsocket) {
-	char *postrequest;
-	asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
+	char postrequest[BUFFER_MAX_SIZE];
+	snprintf(postrequest, BUFFER_MAX_SIZE, "HTTP/1.1 404 Not Found\n");
+	long fileSize;
 	char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
-	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
-	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+	fileSize = strlen(fileContents);
+	snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: text/html\n\n", postrequest);
+
+	long headerSize = strlen(postrequest);
+	char *response = malloc(headerSize + fileSize);
+	memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
+	memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
+
+	int n = write(newsocket, response, headerSize + fileSize);
+	fprintf(stdout,"%s\n\n\n",response);
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-	int n = write(newsocket,postrequest, strlen(postrequest));
-	fprintf(stdout,"%s\n\n\n",postrequest);
+	free(response); //free the response too
+
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
@@ -281,15 +297,24 @@ void return404(int newsocket) {
  *@param newsocket socket current status
  */
 void return500(int newsocket) {
-	char *postrequest;
-	asprintf(&postrequest, "HTTP/1.1 500 Internal Server Error\n");
+	char postrequest[BUFFER_MAX_SIZE];
+	snprintf(postrequest, BUFFER_MAX_SIZE, "HTTP/1.1 500 Internal Server Error\n");
+	long fileSize;
 	char *fileContents = readFile("./500.html", "r"); //"r" to read the file as text
-	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
-	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
-	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
+	fileSize = strlen(fileContents);
+	snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	snprintf(postrequest, BUFFER_MAX_SIZE, "%sContent-Type: text/html\n\n", postrequest);
+
+	long headerSize = strlen(postrequest);
+	char *response = malloc(headerSize + fileSize);
+	memcpy(response, (void *)postrequest, headerSize); //copy the header into our new memory chunk
+	memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
+
+	int n = write(newsocket, response, headerSize + fileSize);
+	fprintf(stdout,"%s\n\n\n",response);
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
-	int n = write(newsocket,postrequest, strlen(postrequest));
-	fprintf(stdout,"%s\n\n\n",postrequest);
+	free(response); //free the response too
+
 	if (n < 0){
 		fprintf(stderr,"Writing to socket fail");
 		exit(1);
