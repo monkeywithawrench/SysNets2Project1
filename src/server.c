@@ -137,7 +137,7 @@ int main(int argc, char *argv[]){
 							char *fileContents = readFile(fileLocation, "r"); //"r" to read the file as text
 							if(fileContents==NULL)
 								return500(newsocket);
-							asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+							asprintf(&postrequest, "%sContent-Length: %zu\n", postrequest, strlen(fileContents)); //pls work
 							asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 							asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]){
 							if(fileContents==NULL)
 								return500(newsocket);
 							fileSize = getFileSize(fileLocation);
-							asprintf(&postrequest, "%sContent-Length: %ld\n", postrequest, getFileSize(fileLocation));
+							asprintf(&postrequest, "%sContent-Length: %zu\n", postrequest, getFileSize(fileLocation));
 
 							if(strcmp(fileExtension, "jpg")==0 || strcmp(fileExtension, "jpeg")==0) { //IMAGES
 								asprintf(&postrequest, "%sContent-Type: image/jpeg\n\n", postrequest);
@@ -262,7 +262,7 @@ void return404(int newsocket) {
 	char *postrequest;
 	asprintf(&postrequest, "HTTP/1.1 404 Not Found\n");
 	char *fileContents = readFile("./404.html", "r"); //"r" to read the file as text
-	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	asprintf(&postrequest, "%sContent-Length: %zu\n", postrequest, strlen(fileContents)); //pls work
 	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
@@ -285,7 +285,7 @@ void return500(int newsocket) {
 	char *postrequest;
 	asprintf(&postrequest, "HTTP/1.1 500 Internal Server Error\n");
 	char *fileContents = readFile("./500.html", "r"); //"r" to read the file as text
-	asprintf(&postrequest, "%sContent-Length: %d\n", postrequest, strlen(fileContents)); //pls work
+	asprintf(&postrequest, "%sContent-Length: %zu\n", postrequest, strlen(fileContents)); //pls work
 	asprintf(&postrequest, "%sContent-Type: text/html\n", postrequest);
 	asprintf(&postrequest, "%s\n%s", postrequest, fileContents); //append file contents to postrequest
 	free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
