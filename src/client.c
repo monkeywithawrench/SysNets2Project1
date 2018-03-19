@@ -1,3 +1,4 @@
+#define _GNU_SOURCE			//Need this for asprintf(), otherwise we get implicit declaration
 #include <stdio.h>          //Standard library
 #include <stdlib.h>         //Standard library
 #include <strings.h>        //Strings Library
@@ -18,6 +19,7 @@
 */
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
+#define CONTENT_MAX_SIZE 102375 //100KiB (25 4k mem pages) This will be the max size webpage that can be loaded, excluding attached media
 
 //The client
 int main(int argc, char *argv[]){
@@ -26,6 +28,7 @@ int main(int argc, char *argv[]){
 	struct hostent *server;//store info of host
 	int socket_hold, port, n;
 	char buffer[BUFFER_MAX_SIZE];
+	char content[CONTENT_MAX_SIZE];
 
 	//exe >> purpose >> port#
 	if (argc < 3){
@@ -101,15 +104,17 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"Writing to socket fail");
       		exit(0);
 	}
+
 	memset(buffer,0,BUFFER_MAX_SIZE);
+	memset(content,0,CONTENT_MAX_SIZE);
 
 	//Check read success
-	n = read(socket_hold,buffer,BUFFER_MAX_SIZE);//(reference to socket by file descriptor, the message read, read up to this length)
+	n = read(socket_hold,content,CONTENT_MAX_SIZE);//(reference to socket by file descriptor, the message read, read up to this length)
 	if (n < 0){
 		fprintf(stderr,"Reading from socket fail");
       		exit(0);
 	}
-	printf("%s\n",buffer);
+	printf("%s\n",content);
   	}//part of while loop
 	return 0;
 }

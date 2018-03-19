@@ -1,0 +1,1805 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<link href='https://www.blogger.com/static/v1/widgets/3957297643-widget_css_bundle.css' rel='stylesheet' type='text/css'/>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+<meta content='blogger' name='generator'/>
+<link href='http://insanecoding.blogspot.com/favicon.ico' rel='icon' type='image/x-icon'/>
+<link href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html' rel='canonical'/>
+<link rel="alternate" type="application/atom+xml" title="Insane Coding - Atom" href="http://insanecoding.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="Insane Coding - RSS" href="http://insanecoding.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="Insane Coding - Atom" href="https://www.blogger.com/feeds/833174317742362874/posts/default" />
+
+<link rel="alternate" type="application/atom+xml" title="Insane Coding - Atom" href="http://insanecoding.blogspot.com/feeds/9026987131468508784/comments/default" />
+<!--Can't find substitution for tag [blog.ieCssRetrofitLinks]-->
+<link href='http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s1600/asprintf.png' rel='image_src'/>
+<meta content='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html' property='og:url'/>
+<meta content='Memory management in C and auto allocating sprintf() - asprintf()' property='og:title'/>
+<meta content=' Memory Management  Memory management in C is viewed by some to be quite tricky. One needs to work with pointers that can point anywhere in ...' property='og:description'/>
+<meta content='http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/w1200-h630-p-k-no-nu/asprintf.png' property='og:image'/>
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>Insane Coding: Memory management in C and auto allocating sprintf() - asprintf()</title>
+<style id='page-skin-1' type='text/css'><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Minima Stretch
+Designer: Douglas Bowman / Darren Delaye
+URL:      www.stopdesign.com
+Date:     26 Feb 2004
+----------------------------------------------- */
+/* Variable definitions
+====================
+<Variable name="bgcolor" description="Page Background Color"
+type="color" default="#fff">
+<Variable name="textcolor" description="Text Color"
+type="color" default="#333">
+<Variable name="linkcolor" description="Link Color"
+type="color" default="#58a">
+<Variable name="pagetitlecolor" description="Blog Title Color"
+type="color" default="#666">
+<Variable name="descriptioncolor" description="Blog Description Color"
+type="color" default="#999">
+<Variable name="titlecolor" description="Post Title Color"
+type="color" default="#c60">
+<Variable name="bordercolor" description="Border Color"
+type="color" default="#ccc">
+<Variable name="sidebarcolor" description="Sidebar Title Color"
+type="color" default="#999">
+<Variable name="sidebartextcolor" description="Sidebar Text Color"
+type="color" default="#666">
+<Variable name="visitedlinkcolor" description="Visited Link Color"
+type="color" default="#999">
+<Variable name="bodyfont" description="Text Font"
+type="font" default="normal normal 100% Georgia, Serif">
+<Variable name="headerfont" description="Sidebar Title Font"
+type="font"
+default="normal normal 78% 'Trebuchet MS',Trebuchet,Arial,Verdana,Sans-serif">
+<Variable name="pagetitlefont" description="Blog Title Font"
+type="font"
+default="normal normal 200% Georgia, Serif">
+<Variable name="descriptionfont" description="Blog Description Font"
+type="font"
+default="normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif">
+<Variable name="postfooterfont" description="Post Footer Font"
+type="font"
+default="normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif">
+*/
+/* Use this with templates/template-twocol.html */
+body {
+background:#15222b;
+margin:0;
+color:#CAF99B;
+font:x-small Georgia Serif;
+font-size/* */:/**/small;
+font-size: /**/small;
+text-align: center;
+}
+a:link {
+color:#bfe6ff;
+text-decoration:none;
+}
+a:visited {
+color:#999999;
+text-decoration:none;
+}
+a:hover {
+color:#e1771e;
+text-decoration:underline;
+}
+a img {
+border-width:0;
+}
+/* Header
+-----------------------------------------------
+*/
+#header-wrapper {
+margin:0 2% 10px;
+border:1px solid #cccccc;
+}
+#header {
+margin: 5px;
+border: 1px solid #cccccc;
+text-align: center;
+color:#bee4ff;
+}
+#header h1 {
+margin:5px 5px 0;
+padding:15px 20px .25em;
+line-height:1.2em;
+text-transform:uppercase;
+letter-spacing:.2em;
+font: normal normal 200% Georgia, Serif;
+}
+#header a {
+color:#bee4ff;
+text-decoration:none;
+}
+#header a:hover {
+color:#bee4ff;
+}
+#header .description {
+margin:0 5px 5px;
+padding:0 20px 15px;
+text-transform:uppercase;
+letter-spacing:.2em;
+line-height: 1.4em;
+font: normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif;
+color: #dff3ff;
+}
+/* Outer-Wrapper
+----------------------------------------------- */
+#outer-wrapper {
+margin:0;
+padding:10px;
+text-align:left;
+font: normal normal 100% Georgia, Serif;
+}
+#main-wrapper {
+margin-left: 1%;
+width: 67%;
+float: left;
+word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+/*overflow: hidden;*/     /* fix for long non-text content breaking IE sidebar float */
+}
+html > body #main-wrapper {
+margin-left: 2%;
+}
+#sidebar-wrapper {
+margin-right: 1%;
+width: 25%;
+float: right;
+word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+overflow: hidden;     /* fix for long non-text content breaking IE sidebar float */
+}
+html > body #sidebar-wrapper {
+margin-right: 2%;
+}
+/* Headings
+----------------------------------------------- */
+h2 {
+margin:1.5em 0 .75em;
+font:normal normal 78% 'Trebuchet MS',Trebuchet,Arial,Verdana,Sans-serif;
+line-height: 1.4em;
+text-transform:uppercase;
+letter-spacing:.2em;
+color:#999999;
+}
+/* Posts
+-----------------------------------------------
+*/
+h2.date-header {
+margin:1.5em 0 .5em;
+}
+.post {
+margin:.5em 0 1.5em;
+border-bottom:1px dotted #cccccc;
+padding-bottom:1.5em;
+}
+.post h3 {
+margin:.25em 0 0;
+padding:0 0 4px;
+font-size:140%;
+font-weight:normal;
+line-height:1.4em;
+color:#e1771e;
+}
+.post h3 a, .post h3 a:visited, .post h3 strong {
+display:block;
+text-decoration:none;
+color:#e1771e;
+font-weight:normal;
+}
+.post h3 strong, .post h3 a:hover {
+color:#CAF99B;
+}
+.post p {
+margin:0 0 .75em;
+line-height:1.6em;
+}
+.post-footer {
+margin: .75em 0;
+color:#999999;
+text-transform:uppercase;
+letter-spacing:.1em;
+font: normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif;
+line-height: 1.4em;
+}
+.comment-link {
+margin-left:.6em;
+}
+.post img {
+padding:4px;
+border:1px solid #cccccc;
+}
+.post blockquote {
+margin:1em 20px;
+}
+.post blockquote p {
+margin:.75em 0;
+}
+/* Comments
+----------------------------------------------- */
+#comments h4 {
+margin:1em 0;
+font-weight: bold;
+line-height: 1.4em;
+text-transform:uppercase;
+letter-spacing:.2em;
+color: #999999;
+}
+#comments-block {
+margin:1em 0 1.5em;
+line-height:1.6em;
+}
+#comments-block .comment-author {
+margin:.5em 0;
+}
+#comments-block .comment-body {
+margin:.25em 0 0;
+}
+#comments-block .comment-footer {
+margin:-.25em 0 2em;
+line-height: 1.4em;
+text-transform:uppercase;
+letter-spacing:.1em;
+}
+#comments-block .comment-body p {
+margin:0 0 .75em;
+}
+.deleted-comment {
+font-style:italic;
+color:gray;
+}
+.feed-links {
+clear: both;
+line-height: 2.5em;
+}
+#blog-pager-newer-link {
+float: left;
+}
+#blog-pager-older-link {
+float: right;
+}
+#blog-pager {
+text-align: center;
+}
+/* Sidebar Content
+----------------------------------------------- */
+.sidebar {
+color: #666666;
+line-height: 1.5em;
+}
+.sidebar ul {
+list-style:none;
+margin:0 0 0;
+padding:0 0 0;
+}
+.sidebar li {
+margin:0;
+padding:0 0 .25em 15px;
+text-indent:-15px;
+line-height:1.5em;
+}
+.sidebar .widget, .main .widget {
+border-bottom:1px dotted #cccccc;
+margin:0 0 1.5em;
+padding:0 0 1.5em;
+}
+.main .Blog {
+border-bottom-width: 0;
+}
+#AdSense3 {
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+}
+#HTML1 {
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+}
+/* Profile
+----------------------------------------------- */
+.profile-img {
+float: left;
+margin: 0 5px 5px 0;
+padding: 4px;
+border: 1px solid #cccccc;
+}
+.profile-data {
+margin:0;
+text-transform:uppercase;
+letter-spacing:.1em;
+font: normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif;
+color: #999999;
+font-weight: bold;
+line-height: 1.6em;
+}
+.profile-datablock {
+margin:.5em 0 .5em;
+}
+.profile-textblock {
+margin: 0.5em 0;
+line-height: 1.6em;
+}
+.profile-link {
+font: normal normal 78% 'Trebuchet MS', Trebuchet, Arial, Verdana, Sans-serif;
+text-transform: uppercase;
+letter-spacing: .1em;
+}
+/* Footer
+----------------------------------------------- */
+#footer {
+width:660px;
+clear:both;
+margin:0 auto;
+padding-top:15px;
+line-height: 1.6em;
+text-transform:uppercase;
+letter-spacing:.1em;
+text-align: center;
+}
+/** Page structure tweaks for layout editor wireframe */
+body#layout #header {
+margin-left: 0px;
+margin-right: 0px;
+}
+
+--></style>
+<meta content='uFqiyqwd4weXxAMihnnOUsejaDKEnJiOfrPzPKkgq94' name='google-site-verification'/>
+<link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=833174317742362874&amp;zx=d67340b1-6580-448f-842a-64b00763d3c8' media='none' onload='if(media!=&#39;all&#39;)media=&#39;all&#39;' rel='stylesheet'/><noscript><link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=833174317742362874&amp;zx=d67340b1-6580-448f-842a-64b00763d3c8' rel='stylesheet'/></noscript>
+</head>
+<body>
+<div class='navbar section' id='navbar'><div class='widget Navbar' data-version='1' id='Navbar1'><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener('load',
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<div id="navbar-iframe-container"></div>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+      gapi.load("gapi.iframes:gapi.iframes.style.bubble", function() {
+        if (gapi.iframes && gapi.iframes.getContext) {
+          gapi.iframes.getContext().openChild({
+              url: 'https://www.blogger.com/navbar.g?targetBlogID\x3d833174317742362874\x26blogName\x3dInsane+Coding\x26publishMode\x3dPUBLISH_MODE_BLOGSPOT\x26navbarType\x3dBLACK\x26layoutType\x3dLAYOUTS\x26searchRoot\x3dhttp://insanecoding.blogspot.com/search\x26blogLocale\x3den\x26v\x3d2\x26homepageUrl\x3dhttp://insanecoding.blogspot.com/\x26targetPostID\x3d9026987131468508784\x26blogPostOrPageUrl\x3dhttp://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html\x26vt\x3d-6399235695946537356',
+              where: document.getElementById("navbar-iframe-container"),
+              id: "navbar-iframe"
+          });
+        }
+      });
+    </script><script type="text/javascript">
+(function() {
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = '//pagead2.googlesyndication.com/pagead/js/google_top_exp.js';
+var head = document.getElementsByTagName('head')[0];
+if (head) {
+head.appendChild(script);
+}})();
+</script>
+</div></div>
+<div id='outer-wrapper'><div id='wrap2'>
+<!-- skip links for text browsers -->
+<span id='skiplinks' style='display:none;'>
+<a href='#main'>skip to main </a> |
+      <a href='#sidebar'>skip to sidebar</a>
+</span>
+<div id='header-wrapper'>
+<div class='header section' id='header'><div class='widget Header' data-version='1' id='Header1'>
+<div id='header-inner'>
+<div class='titlewrapper'>
+<h1 class='title'>
+<a href='http://insanecoding.blogspot.com/'>
+Insane Coding
+</a>
+</h1>
+</div>
+<div class='descriptionwrapper'>
+<p class='description'><span>'coz good thinking requires going outside the box</span></p>
+</div>
+</div>
+</div></div>
+</div>
+<div id='content-wrapper'>
+<div id='main-wrapper'>
+<div class='main section' id='main'><div class='widget Blog' data-version='1' id='Blog1'>
+<div class='blog-posts hfeed'>
+
+          <div class="date-outer">
+        
+<h2 class='date-header'><span>Monday, June 30, 2014</span></h2>
+
+          <div class="date-posts">
+        
+<div class='post-outer'>
+<div><hr/></div>
+<div class='post hentry' itemscope='itemscope' itemtype='http://schema.org/BlogPosting'>
+<a name='9026987131468508784'></a>
+<h3 class='post-title entry-title' itemprop='name'>
+Memory management in C and auto allocating sprintf() - asprintf()
+</h3>
+<div class='post-header'>
+<div class='post-header-line-1'><span class='post-author vcard'>
+Posted by
+<span class='fn'>
+<a href='https://www.blogger.com/profile/06901386115570670209' itemprop='author' rel='author' title='author profile'>
+insane coder
+</a>
+</span>
+</span>
+<span class='post-timestamp'>
+at
+<a class='timestamp-link' href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html' itemprop='url' rel='bookmark' title='permanent link'><abbr class='published' itemprop='datePublished' title='2014-06-30T20:24:00-07:00'>Monday, June 30, 2014</abbr></a>
+</span>
+</div>
+</div>
+<div><hr/><br/></div>
+<div class='post-body entry-content' id='post-body-9026987131468508784' itemprop='articleBody'>
+<h3 style="text-align: center;">
+Memory Management</h3>
+Memory management in C is viewed by some to be quite tricky. One needs to work with pointers that can point anywhere in memory, and if misused, cause a program to misbehave, or worse.<br />
+<br />
+The basic functions to allocate and deallocate memory in C are <i><a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/malloc.html">malloc()</a></i> and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/free.html"><i>free()</i></a> respectively. The <i>malloc()</i> function takes a size in bytes of how much to allocate, and returns a pointer to the allocated memory to be used. Upon failure, a <a href="http://en.wikipedia.org/wiki/Pointer_%28computer_programming%29#Null_pointer">null pointer</a>, which can be thought of as a pointer pointing to <i>0</i> is returned. The <i>free()</i> function takes the pointer returned by <i>malloc()</i>, and deallocates the memory, or frees up the memory it was once pointing to.<br />
+<br />
+To work with malloc() in simple situations, typically, code along the following lines is used:<br />
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">void *p = malloc(size);<br />if (p)<br />{<br />&nbsp; ... work with p ...<br />&nbsp; free(p);<br />}<br />else<br />{<br />&nbsp; ... handle error scenario ...<br />}</span></blockquote>
+<br />
+Unfortunately many experienced programmers forget to handle the failure scenario. I've even heard some say they purposely don't, as they have no clue how to proceed, and just letting the program crash is good enough for them. If you meet someone who makes that argument, revoke their programming license. We don't need such near sighted idiots writing libraries.<br />
+<br />
+In any case, even the above can lead to some misuse. After this block of code runs, what is <i>p</i> now pointing to?<br />
+<br />
+After the above code runs, in the case that <i>malloc()</i> succeeded, <i>p</i> is now pointing to memory in middle of nowhere, and can't be used. This is known as a <a href="http://en.wikipedia.org/wiki/Dangling_pointer">dangling pointer</a>. Dangling pointers can be dangerous, as an <i>if</i> clause as above will think the pointer is valid, and may do something with it, or lead to the infamous <i>use after free</i> bug. This becomes more likely to occur as the situation becomes more complicated and there are loops involved, and how <i>malloc()</i> and <i>free()</i> interact can take multiple paths.<br />
+<br />
+Pointers involved with memory management should always be pointing at <i>0</i> or at allocated memory. Anything else is just asking for trouble. Therefore, I deem any direct use of <i>free()</i> dangerous, as it doesn't set the pointer to <i>0</i>.<br />
+<br />
+So if <i>free()</i> is considered harmful, what should one use?<br />
+<br />
+In C++, I recommend the following:<br />
+<br />
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">static inline void insane_free(void *&amp;p)<br />{<br />&nbsp; free(p);<br />&nbsp; p = 0;<br />}</span></blockquote>
+<br />
+This <i>insane_free()</i> is now a drop in replacement for <i>free()</i>, and can be used instead. (Since C++ programs normally use <i>new</i> and <i>delete</i>/<i>delete[]</i> instead, I leave it as an exercise to the reader how to work with those.)<br />
+<br />
+However, C doesn't support direct references. One can pass a pointer by a pointer to accomplish similar results, but that becomes clunky and is not a drop in replacement. So in C, I recommend the following:<br />
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">#define insane_free(p) { free(p); p = 0; }</span></blockquote>
+It makes use of the preprocessor, so some may consider it messy, but it can be used wherever <i>free()</i> currently is. One could also name the macro <i>free</i> in order to automatically replace existing code, but it's best not to program that way, as you begin to rely on these semantics. This in turn means someone copying your code may think a call to <i>free()</i> is the normal <i>free()</i> and not realize something special is occurring when they <a href="http://insanecoding.blogspot.com/2014/05/copying-code-copying-implementation.html">copy it elsewhere without the macro</a>.<br />
+<br />
+Correct usage in simple cases is then:<br />
+<blockquote class="tr_bq">
+<blockquote class="tr_bq">
+<span style="font-family: 'Courier New', Courier, monospace;">void *p = malloc(size);</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">if (p)</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">{</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">&nbsp; ... work with p ...</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">&nbsp; insane_free(p);</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">}</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">else</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">{</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">&nbsp; ... handle error scenario ...</span><br />
+<span style="font-family: 'Courier New', Courier, monospace;">}</span></blockquote>
+</blockquote>
+If you think using a wrapper macro or function is overkill, and just always manually assigning the pointer to <i>0</i> after freeing is the way to go, consider that it's unwieldy to constantly do so, and you may forget to. If the above technique was always used, all <i>use after free</i> bugs would never have occurred in the first place.<br />
+<br />
+Something else to be aware of is that there's nothing wrong with calling <i>free(0)</i>. However, calling <i>free()</i> upon a pointer which is not null and not pointing to allocated memory is forbidden and will crash your program. So stick to the advice here, and you may just find memory management became significantly easier.<br />
+<br />
+If all this talk of pointers is beyond you, consider acquiring&nbsp;<a href="http://www.amazon.com/gp/product/1449344186/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1449344186&amp;linkCode=as2&amp;tag=insacodi-20&amp;linkId=WE4BS3IXKBI3ENS5">Understanding and Using C Pointers</a>.<br />
+<br />
+<h3 style="text-align: center;">
+<a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/sprintf.html"><i>sprintf()</i></a>&nbsp;and <a href="http://asprintf.insanecoding.org/"><i>asprintf()</i></a></h3>
+If you do a lot of C programming, at some point, you probably have used the <i>sprintf()</i> function, or its safer counterpart <i>snprintf()</i>.<br />
+<br />
+These two functions <i>sprintf()</i> and <i>snprintf()</i> act like <i><a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/printf.html">printf()</a></i>, but instead of printing to the <a href="http://en.wikipedia.org/wiki/Standard_streams#Standard_output_.28stdout.29">standard output</a>, they print to a fixed-length string buffer. Now a fixed-length string buffer is great and all, but what if you wanted something which automatically allocated the amount it needed?<br />
+<br />
+Enter <i><a href="http://asprintf.insanecoding.org/">asprintf()</a></i>, a function which acts like <i>sprintf()</i>, but is auto-allocating, and needs no buffer supplied. This function was invented ages ago by <a href="http://en.wikipedia.org/wiki/GNU_C_Library">GLIBC</a>, shortly thereafter copied to the modern <a href="http://en.wikipedia.org/wiki/Berkeley_Software_Distribution">BSDs</a>, and found its way further still into all sorts of libraries, although is not yet ubiquitous.<br />
+<br />
+Let's compare the prototypes of the two:<br />
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;"><i>int</i> sprintf(<i>char *</i>buffer, <i>const char *</i>format, ...);</span>&nbsp;</blockquote>
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;"><span style="font-style: italic;">int</span>&nbsp;asprintf(<span style="font-style: italic;">char **</span>ret,&nbsp;<span style="font-style: italic;">const char *</span>format,&nbsp;<span style="font-style: italic;">...</span>);</span></blockquote>
+The sanest approach would have been for a function like asprintf() to have the prototype of:<br />
+<blockquote class="tr_bq">
+<span style="font-family: 'Courier New', Courier, monospace; font-style: italic;">char *</span><span style="font-family: 'Courier New', Courier, monospace;">asprintf(c</span><span style="font-family: 'Courier New', Courier, monospace; font-style: italic;">onst char *</span><span style="font-family: 'Courier New', Courier, monospace;">format,&nbsp;</span><span style="font-family: 'Courier New', Courier, monospace; font-style: italic;">...</span><span style="font-family: 'Courier New', Courier, monospace;">);</span></blockquote>
+But its creators wanted to make it act like sprintf(), and its design can also be potentially more useful.<br />
+<br />
+Instead of passing <i>asprintf()</i> a buffer, a pointer to a variable of type <i>char *</i> needs to be passed, like so:<br />
+<blockquote class="tr_bq">
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">char *buffer;</span><br />
+<span style="font-family: Courier New, Courier, monospace;">asprintf(&amp;buffer, ...whatever...);</span></blockquote>
+</blockquote>
+Now how asprintf() actually works is no big secret. The <a href="http://en.wikipedia.org/wiki/C99">C99</a> standard specified that snprintf() upon failure should return the amount of characters that would be needed to contain its output. Which means that conceptually something along the following lines would be all that asprintf() needs to do:<br />
+<blockquote class="tr_bq">
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">char *buffer = malloc(snprintf(0, 0, format, data...)+1);</span><br />
+<span style="font-family: Courier New, Courier, monospace;">sprintf(buffer, format, data...);</span></blockquote>
+</blockquote>
+Of course though, the above taken verbatim would be incorrect, because it mistakenly assumes that nothing can go wrong, such as the <i>malloc()</i>&nbsp;or <i>snprintf()</i> failing.<br />
+<br />
+First let's better understand what the <i>*printf()</i> functions return. Upon success, they return the amount of characters written to the string (which does not include the trailing <a href="http://en.wikipedia.org/wiki/Null_character">null byte</a>). Or in other words, the return value is equivalent to calling <i><a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/strlen.html">strlen()</a></i> on the data being output, which can save you needing to use a <i>strlen()</i> call with <i>sprintf()</i> or similar functions for certain scenarios. Upon failure, for whatever reason, the return is <i>-1</i>. Of course there's the above mentioned exception to this with <i>snprintf()</i>, where the amount of characters needed to contain the output would be returned instead. If during the output, the size overflows (exceeds&nbsp;<i><a href="http://www.cplusplus.com/reference/climits/">INT_MAX</a></i>), many implementations will return a large negative value (failure with&nbsp;<i>snprintf(), or success with all the functions</i>).<br />
+<br />
+Like the other functions,&nbsp;<i>asprintf()</i> also returns an integer of the nature described above. Which means working with <i>asprintf()</i> should go something like this:<br />
+<blockquote class="tr_bq">
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">char *buffer;</span><br />
+<span style="font-family: Courier New, Courier, monospace;">if (asprintf(&amp;buffer, ...whatever...) != -1)</span><br />
+<span style="font-family: Courier New, Courier, monospace;">{</span><br />
+<span style="font-family: Courier New, Courier, monospace;">&nbsp; do_whatever(buffer);</span><br />
+<span style="font-family: Courier New, Courier, monospace;">&nbsp; insane_free(buffer);</span><br />
+<span style="font-family: Courier New, Courier, monospace;">}</span></blockquote>
+</blockquote>
+However, unlike the other functions, <i>asprintf()</i> has a second return value, its first argument, or what the function sees as <i>*ret</i>. To comply with the memory management discussion above, this should also be set to <i>0</i> upon failure. Unfortunately, many popular implementations, including those in GLIBC&nbsp;and <a href="http://en.wikipedia.org/wiki/MinGW">MinGW</a> fail to do so.<br />
+<br />
+Since I develop with the above systems, and I'm using <i>asprintf()</i> in loops with multiple paths, it becomes unwieldy to need to pass around the buffer and the returned <i>int</i>, so I'd of course want saner semantics which don't leave dangling pointers in my program.<br />
+<br />
+In order to correct such mistakes, I would need to take code from elsewhere, or whip up my own function. Now I find developing functions such as these to be relatively simple, but even so, I always go to check other implementations to see if there's any important points I'm missing before I go implement one. Maybe, I'll even find one which meets my standards with a decent license which I can just copy verbatim.<br />
+<br />
+In researching this, to my shock and horror, I came across implementations which properly ensure that <i>*ret</i> is set to <i>0</i> upon failure, but the returned <i>int</i> may be undefined in certain cases. That some of the most popular implementations get one half wrong, and that some of the less popular get the other half wrong is just downright terrifying. This means that there isn't any necessarily portable way to check for failure with the different implementations. I certainly was not expecting that, but with the amount of horrible code out there, I guess I really shouldn't be surprised anymore.<br />
+<br />
+Also in the course of research, besides finding many implementations taking a non-portable approach, many have problems in all sorts of edge cases. Such as mishandling overflow, or not realizing that two successive calls to a <i>*printf()</i> function with the same data may not necessarily yield the same results. Some try to calculate the length needed with some extra logic and only call <i>sprintf()</i> once, but this logic may not be portable, or always needs updating as new types are added to the format string as standards progress, or the C library decided to offer new features. Some of the mistakes I found seem to be due to expecting a certain implementation of underlying functions, and then later the underlying functions were altered, or the <a href="http://insanecoding.blogspot.com/2014/05/copying-code-copying-implementation.html">code was copied verbatim to another library, without noting the underlying functions acted differently</a>.<br />
+<br />
+So, once again, I'm finding myself needing to supply the world with more <a href="http://asprintf.insanecoding.org/"><b><i>usable implementations</i></b></a>.<br />
+<br />
+Let's dive into how to implement <i>asprinf()</i>.<br />
+<br />
+Every one of these kind of functions actually has two variants, the regular which takes an unlimited amount of arguments, and the <i>v</i> variants which take a <a href="http://en.cppreference.com/w/c/variadic/va_list"><i>va_list</i></a>&nbsp;(defined in <a href="http://en.wikipedia.org/wiki/Stdarg.h"><i>stdarg.h</i></a>) after the format argument instead. These <i>va_list</i>s are what <i>...</i> gets turned into after use, and in fact, every non-<i>v</i> <u><i>*printf()</i></u> function is actually wrapped to a counterpart <i>v*printf()</i> function. This makes implementing <i>asprintf()</i> itself quite straight forward:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s1600/asprintf.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="116" src="http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s1600/asprintf.png" width="320" /></a></div>
+<br />
+<br />
+<div>
+To fix the aforementioned return problems, one could also easily throw in here a check upon the correct return variable used in the underlying <i>vasprintf()</i> implementation and use it to set the other. However, that's not a very portable fix, and the underlying implementation of <i>vasprintf()</i> can have other issues as described above.</div>
+<div>
+<br /></div>
+<div>
+A straight forward implementation of <i>vasprintf()</i> would be:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-zhik6v2VyVA/U7IuciOO_HI/AAAAAAAAAMY/hMqppCIvzD0/s1600/vasprintf-c99.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="276" src="http://3.bp.blogspot.com/-zhik6v2VyVA/U7IuciOO_HI/AAAAAAAAAMY/hMqppCIvzD0/s1600/vasprintf-c99.png" width="320" /></a></div>
+<br />
+<br /></div>
+<div>
+As long as you have a proper C99 implementation of <i>stdarg.h</i> and <i>vsnprintf()</i>, you should be good to go. However, some systems may have <i>vsnprintf()</i> but not <i>va_copy()</i>. The <i>va_copy()</i> macro is needed because a <i>va_list</i> may not just be a simple object, but have handles to elsewhere, and a <i><a href="http://en.wikipedia.org/wiki/Object_copy#Deep_copy">deep copy</a></i> is needed. Since <i>vsnprintf()</i> being passed the original <i>va_list</i> may modify its contents, a copy is needed because the function is called twice.</div>
+<div>
+<br /></div>
+<div>
+Microsoft Visual C++ (MSVC, or Microsoft Vs. C++ as I like to think of it) up until the latest versions has utterly lacked <i>va_copy()</i>. This and several other &nbsp;systems that lack it though usually have simple <i>va_list</i>s that can be <i><a href="http://en.wikipedia.org/wiki/Object_copy#Shallow_copy">shallow copied</a></i>. To gain compatibility with them, simply employ:<br />
+<span style="font-family: 'Courier New', Courier, monospace;"><br /></span>
+<br />
+<blockquote class="tr_bq">
+<span style="font-family: 'Courier New', Courier, monospace;">#ifndef va_copy</span>&nbsp;</blockquote>
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">#define va_copy(dest, src) dest = src</span>&nbsp;</blockquote>
+<blockquote class="tr_bq">
+<span style="font-family: Courier New, Courier, monospace;">#endif</span></blockquote>
+<span style="font-family: Courier New, Courier, monospace;"><br /></span></div>
+<div>
+Be warned though that if your system lacks <i>va_copy()</i>, and a <i>deep copy</i> is required, using the above is a recipe for disaster.</div>
+<div>
+<br /></div>
+<div>
+Once we're dealing with systems where shallow copy works though, the following works just as well, as <i>vsnprintf()</i> will be copying the <i>va_list</i> it receives and won't be modifying other data.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-BGeRD3fMzko/U7IuzcphwWI/AAAAAAAAAMg/tcm2FDLPZQw/s1600/vasprintf-novacopy.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="218" src="http://1.bp.blogspot.com/-BGeRD3fMzko/U7IuzcphwWI/AAAAAAAAAMg/tcm2FDLPZQw/s1600/vasprintf-novacopy.png" width="320" /></a></div>
+<br />
+<br /></div>
+<div>
+Before we go further, there's two points I'd like to make.</div>
+<div>
+<ul>
+<li>Some implementations of <i>vsnprintf()</i> are wrong, and always return <i>-1</i> upon failure, not the size that would've been needed. On such systems, another approach will need to be taken to calculate the length required, and the implementations here of <i>vasprintf()</i> (and by extension <i>asprintf()</i>) will just always return <i>-1</i> and <i>*ret</i> (or <i>*strp</i>) will be <i>0</i>.</li>
+<li>The code&nbsp;<span style="font-family: 'Courier New', Courier, monospace;">if ((r &lt; 0) || (r &gt; size))</span>&nbsp;could instead be <span style="font-family: Courier New, Courier, monospace;">if (r != size)</span>, more on that later.</li>
+</ul>
+<div>
+Now on Windows, <i>vsnprintf()</i> always returns -1 upon failure, in violation of the C99 standard. However, in violation of <a href="http://msdn.microsoft.com/en-us/library/1kt27hek.aspx">Microsoft's own specifications</a>, and undocumented, I found that <i>vsnprintf()</i> with the first two parameters being passed <i>0</i> as in the above code actually works correctly. It's only when you're passing data there that the Windows implementation violates the spec. But in any case, <a href="http://insanecoding.blogspot.com/2010/06/undocumented-apis.html">relying on undocumented behavior is never a good idea</a>.</div>
+</div>
+<div>
+<br /></div>
+<div>
+On certain versions of MinGW, if&nbsp;<i>__USE_MINGW_ANSI_STDIO</i> is defined before <a href="http://en.wikipedia.org/wiki/C_file_input/output"><i>stdio.h</i></a>&nbsp;<stdio .h="">is included, it'll cause the broken Windows <i>*printf()</i> functions to be replaced with C99 standards compliant ones.</stdio></div>
+<div>
+<br /></div>
+<div>
+In any case though, Windows actually provides a different function to retrieve the needed length,&nbsp;<i><a href="http://msdn.microsoft.com/en-us/library/w05tbk72.aspx">_vscprintf()</a></i>. A simple implementation using it would be:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-48uFXDHU9jg/U7Iu7k8yBbI/AAAAAAAAAMo/XmwVVhdWfjE/s1600/vasprintf-msvc-nofuture.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="162" src="http://4.bp.blogspot.com/-48uFXDHU9jg/U7Iu7k8yBbI/AAAAAAAAAMo/XmwVVhdWfjE/s1600/vasprintf-msvc-nofuture.png" width="320" /></a></div>
+<br />
+<br /></div>
+<div>
+This however makes the mistake of assuming that<i> vsnprintf()</i> is implemented incorrectly as it currently is with MSVC. Meaning this will break if Microsoft ever fixes the function, or you're using MinGW with&nbsp;<i>__USE_MINGW_ANSI_STDIO</i>. So better to use:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-3cNvg0nBEd0/U7IvBiIpvkI/AAAAAAAAAMw/n9yByNICpPs/s1600/vasprintf-msvc.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="213" src="http://3.bp.blogspot.com/-3cNvg0nBEd0/U7IvBiIpvkI/AAAAAAAAAMw/n9yByNICpPs/s1600/vasprintf-msvc.png" width="320" /></a></div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+Lastly, let me return to that second point from earlier. The <i>vsnprintf()</i> function call the second time may fail because the system ran out of memory to perform its activities once the call to <i>malloc()</i> succeeds, or something else happens on the system to cause it to fail. But also, in a <i><a href="http://en.wikipedia.org/wiki/Multithreading_%28software%29#Multithreading">multi-threaded</a></i> program, the various arguments being passed could have their data change between the two calls.</div>
+<div>
+<br /></div>
+<div>
+Now if you're calling functions while another thread is modifying the same variables you're passing to said function, you're just asking for trouble. Personally, I think that all the final check should do is ensure that <i>r</i> is equal to <i>size</i>, and if not, something went wrong, free the data (with <i>insane_free()</i> of course), and set <i>r</i> to <i>-1</i>. However, any value between <i>0</i> and <i>size</i> (inclusive), even when not equal to <i>size</i> means the call succeeded for some definition of success, which the above implementations all allow for (except where not possible Microsoft). Based on this idea, several of the implementations I looked at constantly loop while <i>vsnprintf()</i> continues to indicate that the buffer needs to be larger. Therefore, I'll provide such an implementation as well:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-veeaAaPeZu4/U7IvHB4zWcI/AAAAAAAAAM4/CEHNhzu16Zc/s1600/vasprintf-c99-loop.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="230" src="http://4.bp.blogspot.com/-veeaAaPeZu4/U7IvHB4zWcI/AAAAAAAAAM4/CEHNhzu16Zc/s1600/vasprintf-c99-loop.png" width="320" /></a></div>
+<br />
+<br /></div>
+<div>
+Like the first implementation, if all you lacked was <i>va_copy()</i>, and <i>shallow copy</i> is fine, it's easy to get this to work on your platform as described above. But if <i>vsnprintf()</i> isn't implemented correctly (hello MSVC), this will always fail.</div>
+<div>
+<br /></div>
+<div>
+All the code here including the appropriate headers, along with notes and usage examples are all packed up and ready to use on my <a href="http://asprintf.insanecoding.org/"><i>asprintf()</i> implementation</a> website. Between everything offered, you should hopefully find something that works well for you, and is better than what your platform provides, or alternative junk out there.</div>
+<div>
+<br /></div>
+<div>
+As always, I'm only human, so if you found any bugs, please inform me.</div>
+<div style='clear: both;'></div>
+</div>
+<div class='post-footer'>
+<div class='post-footer-line post-footer-line-1'><span class='post-comment-link'>
+</span>
+<span class='post-icons'>
+<span class='item-control blog-admin pid-1333403349'>
+<a href='https://www.blogger.com/post-edit.g?blogID=833174317742362874&postID=9026987131468508784&from=pencil' title='Edit Post'>
+<img alt='' class='icon-action' height='18' src='https://resources.blogblog.com/img/icon18_edit_allbkg.gif' width='18'/>
+</a>
+</span>
+</span>
+<span class='post-backlinks post-comment-link'>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-2'><span class='post-labels'>
+Labels:
+<a href='http://insanecoding.blogspot.com/search/label/BSD' rel='tag'>BSD</a>,
+<a href='http://insanecoding.blogspot.com/search/label/buffer%20overflow' rel='tag'>buffer overflow</a>,
+<a href='http://insanecoding.blogspot.com/search/label/c99' rel='tag'>c99</a>,
+<a href='http://insanecoding.blogspot.com/search/label/compatibility' rel='tag'>compatibility</a>,
+<a href='http://insanecoding.blogspot.com/search/label/good%20code' rel='tag'>good code</a>,
+<a href='http://insanecoding.blogspot.com/search/label/Library' rel='tag'>Library</a>,
+<a href='http://insanecoding.blogspot.com/search/label/Portability' rel='tag'>Portability</a>,
+<a href='http://insanecoding.blogspot.com/search/label/Windows' rel='tag'>Windows</a>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-3'><div class='post-share-buttons goog-inline-block'>
+<a class='goog-inline-block share-button sb-email' href='https://www.blogger.com/share-post.g?blogID=833174317742362874&postID=9026987131468508784&target=email' target='_blank' title='Email This'><span class='share-button-link-text'>Email This</span></a><a class='goog-inline-block share-button sb-blog' href='https://www.blogger.com/share-post.g?blogID=833174317742362874&postID=9026987131468508784&target=blog' onclick='window.open(this.href, "_blank", "height=270,width=475"); return false;' target='_blank' title='BlogThis!'><span class='share-button-link-text'>BlogThis!</span></a><a class='goog-inline-block share-button sb-twitter' href='https://www.blogger.com/share-post.g?blogID=833174317742362874&postID=9026987131468508784&target=twitter' target='_blank' title='Share to Twitter'><span class='share-button-link-text'>Share to Twitter</span></a><a class='goog-inline-block share-button sb-facebook' href='https://www.blogger.com/share-post.g?blogID=833174317742362874&postID=9026987131468508784&target=facebook' onclick='window.open(this.href, "_blank", "height=430,width=640"); return false;' target='_blank' title='Share to Facebook'><span class='share-button-link-text'>Share to Facebook</span></a><a class='goog-inline-block share-button sb-pinterest' href='https://www.blogger.com/share-post.g?blogID=833174317742362874&postID=9026987131468508784&target=pinterest' target='_blank' title='Share to Pinterest'><span class='share-button-link-text'>Share to Pinterest</span></a><div class='goog-inline-block google-plus-share-container'><g:plusone source='blogger:blog:plusone' href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html' size='medium' width='300' annotation='inline'/></div>
+</div>
+</div>
+</div>
+</div>
+<div class='comments' id='comments'>
+<a name='comments'></a>
+<h4>7 comments:</h4>
+<div id='Blog1_comments-block-wrapper'>
+<dl class='avatar-comment-indent' id='comments-block'>
+<dt class='comment-author ' id='c268999936073707722'>
+<a name='c268999936073707722'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="https://www.blogger.com/profile/15386775206223776809" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-268999936073707722-15386775206223776809"><img src="https://img1.blogblog.com/img/blank.gif" width="35" height="35" class="delayLoad" style="display: none;" longdesc="//2.bp.blogspot.com/-U8KSRZUz78U/Tr2V-ow0D0I/AAAAAAAAABU/FFi7GYF0nrQ/s35/avatar.png" alt="" title="henke37">
+
+<noscript><img src="//2.bp.blogspot.com/-U8KSRZUz78U/Tr2V-ow0D0I/AAAAAAAAABU/FFi7GYF0nrQ/s35/avatar.png" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='https://www.blogger.com/profile/15386775206223776809' rel='nofollow'>henke37</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-268999936073707722'>
+<p>
+Code as images? I thought that you were better than that.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1404210398445#c268999936073707722' title='comment permalink'>
+July 1, 2014 at 3:26 AM
+</a>
+<span class='item-control blog-admin pid-2033038010'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=268999936073707722' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author blog-author' id='c910627546852979802'>
+<a name='c910627546852979802'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="https://www.blogger.com/profile/06901386115570670209" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-910627546852979802-06901386115570670209"><img src="//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35" width="35" height="35" alt="" title="insane coder">
+
+</a></span></div>
+<a href='https://www.blogger.com/profile/06901386115570670209' rel='nofollow'>insane coder</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-910627546852979802'>
+<p>
+Hi henke37,<br /><br />As part of the continual degrade of Blogger, it is now very difficult to post code into posts, especially if they contain &lt; or &gt;.<br /><br />As a new problem with Blogger that I saw for the first time writing this article, formatting now also randomly changes.<br /><br />You&#39;ll notice the #ifdef code has weird spacing which I couldn&#39;t fix without it degrading into something worse.<br /><br />After trying half a dozen times to get the large code samples to display correctly, I gave up and resorted to images.<br /><br />In any case, I link to a <a href="http://asprintf.insanecoding.org/" rel="nofollow">location</a> you can get the code as text in a tidy package.<br /><br />Due to the issues here though, I probably will one of these days take my articles to my own server, with my own blogging software which I can properly manage instead of the nightmare Blogger has become.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1404216537390#c910627546852979802' title='comment permalink'>
+July 1, 2014 at 5:08 AM
+</a>
+<span class='item-control blog-admin pid-1333403349'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=910627546852979802' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c4046723962832701437'>
+<a name='c4046723962832701437'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="https://www.blogger.com/profile/14339497223179843313" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-4046723962832701437-14339497223179843313"><img src="//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35" width="35" height="35" alt="" title="Unknown">
+
+</a></span></div>
+<a href='https://www.blogger.com/profile/14339497223179843313' rel='nofollow'>Unknown</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-4046723962832701437'>
+<p>
+Interesting article.  I never considered that variable arguments in C might require a deep copy.<br /><br />Would you happen to know of a scenario where this is the case?
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1407879548540#c4046723962832701437' title='comment permalink'>
+August 12, 2014 at 2:39 PM
+</a>
+<span class='item-control blog-admin pid-372509830'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=4046723962832701437' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author blog-author' id='c2320421049773626908'>
+<a name='c2320421049773626908'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="https://www.blogger.com/profile/06901386115570670209" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-2320421049773626908-06901386115570670209"><img src="//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35" width="35" height="35" alt="" title="insane coder">
+
+</a></span></div>
+<a href='https://www.blogger.com/profile/06901386115570670209' rel='nofollow'>insane coder</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-2320421049773626908'>
+<p>
+Offhand, Linux on AMD64 requires it.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1407932782440#c2320421049773626908' title='comment permalink'>
+August 13, 2014 at 5:26 AM
+</a>
+<span class='item-control blog-admin pid-1333403349'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=2320421049773626908' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c6737329956738152635'>
+<a name='c6737329956738152635'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="https://www.blogger.com/profile/04571549733973635821" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-6737329956738152635-04571549733973635821"><img src="//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35" width="35" height="35" alt="" title="Jon Schneider">
+
+</a></span></div>
+<a href='https://www.blogger.com/profile/04571549733973635821' rel='nofollow'>Jon Schneider</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-6737329956738152635'>
+<p>
+To me all this says to use C++ strings wherever possible.
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1409667103186#c6737329956738152635' title='comment permalink'>
+September 2, 2014 at 7:11 AM
+</a>
+<span class='item-control blog-admin pid-386414774'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=6737329956738152635' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author ' id='c5358218336378846853'>
+<a name='c5358218336378846853'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="https://www.blogger.com/profile/03931260511676488069" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-5358218336378846853-03931260511676488069"><img src="https://img1.blogblog.com/img/blank.gif" width="35" height="35" class="delayLoad" style="display: none;" longdesc="//3.bp.blogspot.com/_GYn_spvIZPg/ScUiq3tA_SI/AAAAAAAAAAk/K4iN_sNoras/S45-s35/shlomif-next-to-computer.jpg" alt="" title="Shlomi Fish">
+
+<noscript><img src="//3.bp.blogspot.com/_GYn_spvIZPg/ScUiq3tA_SI/AAAAAAAAAAk/K4iN_sNoras/S45-s35/shlomif-next-to-computer.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='https://www.blogger.com/profile/03931260511676488069' rel='nofollow'>Shlomi Fish</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-5358218336378846853'>
+<p>
+Dear insane coder,<br /><br />this page of yours - http://asprintf.insanecoding.org/ - that I found on a DuckDuckGo search did not contain any contact information and neither did the blogspot.com blog of yours. See http://www.shlomifish.org/meta/FAQ/#obscure_email_addr . As a result I have to resort to posting a comment here that there&#39;s a typo there - &quot;aquire&quot; should be &quot;acquire&quot; - see https://en.wiktionary.org/wiki/aquire . Please correct it and please include some form of contact information on your web-sites.<br /><br />Regards,<br /><br />-- Shlomi Fish
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1449077973857#c5358218336378846853' title='comment permalink'>
+December 2, 2015 at 9:39 AM
+</a>
+<span class='item-control blog-admin pid-1579596581'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=5358218336378846853' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dt class='comment-author blog-author' id='c1617791730996539363'>
+<a name='c1617791730996539363'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="https://www.blogger.com/profile/06901386115570670209" target="" rel="nofollow" onclick="" class="avatar-hovercard" id="av-1617791730996539363-06901386115570670209"><img src="//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35" width="35" height="35" alt="" title="insane coder">
+
+</a></span></div>
+<a href='https://www.blogger.com/profile/06901386115570670209' rel='nofollow'>insane coder</a>
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-1617791730996539363'>
+<p>
+Hello Shlomi<br /><br />Thank you for catching that typo, it has been fixed.<br /><br />The reason I do not include contact information is not because of spam (although spam is an issue), but simply because I don&#39;t like being bothered. Most of my readers know how to get a hold of me on IRC (FreeNode). If there&#39;s something in particular you&#39;d like to discuss, I can contact you ;-)
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html?showComment=1458919726977#c1617791730996539363' title='comment permalink'>
+March 25, 2016 at 8:28 AM
+</a>
+<span class='item-control blog-admin pid-1333403349'>
+<a class='comment-delete' href='https://www.blogger.com/delete-comment.g?blogID=833174317742362874&postID=1617791730996539363' title='Delete Comment'>
+<img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+</dl>
+</div>
+<p class='comment-footer'>
+<a href='https://www.blogger.com/comment.g?blogID=833174317742362874&postID=9026987131468508784' onclick=''>Post a Comment</a>
+</p>
+<div id='backlinks-container'>
+<div id='Blog1_backlinks-container'>
+</div>
+</div>
+</div>
+</div>
+<div class='inline-ad'>
+<script type="text/javascript"><!--
+google_ad_client="pub-2705992652668855";
+google_ad_host="pub-1556223355139109";
+google_ad_width=300;
+google_ad_height=250;
+google_ad_format="300x250_as";
+google_ad_type="text";
+google_ad_host_channel="0001+S0009+L0007";
+google_color_border="15222B";
+google_color_bg="15222B";
+google_color_link="E1771E";
+google_color_url="CAF99B";
+google_color_text="CAF99B";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+
+        </div></div>
+      
+</div>
+<div class='blog-pager' id='blog-pager'>
+<span id='blog-pager-newer-link'>
+<a class='blog-pager-newer-link' href='http://insanecoding.blogspot.com/2014/10/whats-wrong-with-systemd.html' id='Blog1_blog-pager-newer-link' title='Newer Post'>Newer Post</a>
+</span>
+<span id='blog-pager-older-link'>
+<a class='blog-pager-older-link' href='http://insanecoding.blogspot.com/2014/06/avoid-incorrect-chacha20-implementations.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+</span>
+<a class='home-link' href='http://insanecoding.blogspot.com/'>Home</a>
+</div>
+<div class='clear'></div>
+<div class='post-feeds'>
+<div class='feed-links'>
+Subscribe to:
+<a class='feed-link' href='http://insanecoding.blogspot.com/feeds/9026987131468508784/comments/default' target='_blank' type='application/atom+xml'>Post Comments (Atom)</a>
+</div>
+</div>
+<script type='text/javascript'>
+    window.___gcfg = { 'lang': 'en' };
+  </script>
+</div></div>
+</div>
+<div id='sidebar-wrapper'>
+<div class='sidebar section' id='sidebar'><div class='widget LinkList' data-version='1' id='LinkList1'>
+<h2>Insane Coding Sites</h2>
+<div class='widget-content'>
+<ul>
+<li><a href='http://chacha20.insanecoding.org/'>Simple C99 ChaCha20 Implementation</a></li>
+<li><a href='http://asprintf.insanecoding.org/'>asprintf and vasprintf implementations</a></li>
+<li><a href='http://no-oauth.insanecoding.org/'>Anti-OAuth Alliance</a></li>
+</ul>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=LinkList&widgetId=LinkList1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("LinkList1"));' target='configLinkList1' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget BlogArchive' data-version='1' id='BlogArchive1'>
+<h2>Blog Archive</h2>
+<div class='widget-content'>
+<div id='ArchiveList'>
+<div id='BlogArchive1_ArchiveList'>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2016/'>
+2016
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2016/04/'>
+April
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>
+
+        &#9660;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/'>
+2014
+</a>
+<span class='post-count' dir='ltr'>(13)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/12/'>
+December
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/10/'>
+October
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>
+
+        &#9660;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/06/'>
+June
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html'>Memory management in C and auto allocating sprintf...</a></li>
+<li><a href='http://insanecoding.blogspot.com/2014/06/avoid-incorrect-chacha20-implementations.html'>Avoid incorrect ChaCha20 implementations</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/05/'>
+May
+</a>
+<span class='post-count' dir='ltr'>(5)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/04/'>
+April
+</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2014/02/'>
+February
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2013/'>
+2013
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2013/04/'>
+April
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2013/03/'>
+March
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2012/'>
+2012
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2012/12/'>
+December
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2012/07/'>
+July
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/'>
+2011
+</a>
+<span class='post-count' dir='ltr'>(9)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/12/'>
+December
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/11/'>
+November
+</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/10/'>
+October
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/06/'>
+June
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2011/04/'>
+April
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/'>
+2010
+</a>
+<span class='post-count' dir='ltr'>(9)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/11/'>
+November
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/10/'>
+October
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/09/'>
+September
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/07/'>
+July
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/06/'>
+June
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2010/03/'>
+March
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/'>
+2009
+</a>
+<span class='post-count' dir='ltr'>(17)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/12/'>
+December
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/11/'>
+November
+</a>
+<span class='post-count' dir='ltr'>(4)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/10/'>
+October
+</a>
+<span class='post-count' dir='ltr'>(4)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/06/'>
+June
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2009/05/'>
+May
+</a>
+<span class='post-count' dir='ltr'>(5)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2008/'>
+2008
+</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2008/12/'>
+December
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2008/09/'>
+September
+</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2008/01/'>
+January
+</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/'>
+2007
+</a>
+<span class='post-count' dir='ltr'>(17)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/11/'>
+November
+</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/06/'>
+June
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/05/'>
+May
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/04/'>
+April
+</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+        &#9658;&#160;
+      
+</span>
+</a>
+<a class='post-count-link' href='http://insanecoding.blogspot.com/2007/03/'>
+March
+</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogArchive1"));' target='configBlogArchive1' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget BlogSearch' data-version='1' id='BlogSearch1'>
+<h2 class='title'>Search This Blog</h2>
+<div class='widget-content'>
+<div id='BlogSearch1_form'>
+<form action='http://insanecoding.blogspot.com/search' class='gsc-search-box' target='_top'>
+<table cellpadding='0' cellspacing='0' class='gsc-search-box'>
+<tbody>
+<tr>
+<td class='gsc-input'>
+<input autocomplete='off' class='gsc-input' name='q' size='10' title='search' type='text' value=''/>
+</td>
+<td class='gsc-search-button'>
+<input class='gsc-search-button' title='search' type='submit' value='Search'/>
+</td>
+</tr>
+</tbody>
+</table>
+</form>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=BlogSearch&widgetId=BlogSearch1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogSearch1"));' target='configBlogSearch1' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget Subscribe' data-version='1' id='Subscribe1'>
+<div style='white-space:nowrap'>
+<h2 class='title'>Subscribe To</h2>
+<div class='widget-content'>
+<div class='subscribe-wrapper subscribe-type-POST'>
+<div class='subscribe expanded subscribe-type-POST' id='SW_READER_LIST_Subscribe1POST' style='display:none;'>
+<div class='top'>
+<span class='inner' onclick='return(_SW_toggleReaderList(event, "Subscribe1POST"));'>
+<img class='subscribe-dropdown-arrow' src='https://img2.blogblog.com/img/widgets/arrow_dropdown.gif'/>
+<img align='absmiddle' alt='' border='0' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+Posts
+</span>
+<div class='feed-reader-links'>
+<a class='feed-reader-link' href='https://www.netvibes.com/subscribe.php?url=http%3A%2F%2Finsanecoding.blogspot.com%2Ffeeds%2Fposts%2Fdefault' target='_blank'>
+<img src='https://img1.blogblog.com/img/widgets/subscribe-netvibes.png'/>
+</a>
+<a class='feed-reader-link' href='https://add.my.yahoo.com/content?url=http%3A%2F%2Finsanecoding.blogspot.com%2Ffeeds%2Fposts%2Fdefault' target='_blank'>
+<img src='https://img1.blogblog.com/img/widgets/subscribe-yahoo.png'/>
+</a>
+<a class='feed-reader-link' href='http://insanecoding.blogspot.com/feeds/posts/default' target='_blank'>
+<img align='absmiddle' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+                  Atom
+                </a>
+</div>
+</div>
+<div class='bottom'></div>
+</div>
+<div class='subscribe' id='SW_READER_LIST_CLOSED_Subscribe1POST' onclick='return(_SW_toggleReaderList(event, "Subscribe1POST"));'>
+<div class='top'>
+<span class='inner'>
+<img class='subscribe-dropdown-arrow' src='https://img2.blogblog.com/img/widgets/arrow_dropdown.gif'/>
+<span onclick='return(_SW_toggleReaderList(event, "Subscribe1POST"));'>
+<img align='absmiddle' alt='' border='0' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+Posts
+</span>
+</span>
+</div>
+<div class='bottom'></div>
+</div>
+</div>
+<div class='subscribe-wrapper subscribe-type-PER_POST'>
+<div class='subscribe expanded subscribe-type-PER_POST' id='SW_READER_LIST_Subscribe1PER_POST' style='display:none;'>
+<div class='top'>
+<span class='inner' onclick='return(_SW_toggleReaderList(event, "Subscribe1PER_POST"));'>
+<img class='subscribe-dropdown-arrow' src='https://img2.blogblog.com/img/widgets/arrow_dropdown.gif'/>
+<img align='absmiddle' alt='' border='0' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+Comments
+</span>
+<div class='feed-reader-links'>
+<a class='feed-reader-link' href='https://www.netvibes.com/subscribe.php?url=http%3A%2F%2Finsanecoding.blogspot.com%2Ffeeds%2F9026987131468508784%2Fcomments%2Fdefault' target='_blank'>
+<img src='https://img1.blogblog.com/img/widgets/subscribe-netvibes.png'/>
+</a>
+<a class='feed-reader-link' href='https://add.my.yahoo.com/content?url=http%3A%2F%2Finsanecoding.blogspot.com%2Ffeeds%2F9026987131468508784%2Fcomments%2Fdefault' target='_blank'>
+<img src='https://img1.blogblog.com/img/widgets/subscribe-yahoo.png'/>
+</a>
+<a class='feed-reader-link' href='http://insanecoding.blogspot.com/feeds/9026987131468508784/comments/default' target='_blank'>
+<img align='absmiddle' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+                  Atom
+                </a>
+</div>
+</div>
+<div class='bottom'></div>
+</div>
+<div class='subscribe' id='SW_READER_LIST_CLOSED_Subscribe1PER_POST' onclick='return(_SW_toggleReaderList(event, "Subscribe1PER_POST"));'>
+<div class='top'>
+<span class='inner'>
+<img class='subscribe-dropdown-arrow' src='https://img2.blogblog.com/img/widgets/arrow_dropdown.gif'/>
+<span onclick='return(_SW_toggleReaderList(event, "Subscribe1PER_POST"));'>
+<img align='absmiddle' alt='' border='0' class='feed-icon' src='https://img1.blogblog.com/img/icon_feed12.png'/>
+Comments
+</span>
+</span>
+</div>
+<div class='bottom'></div>
+</div>
+</div>
+<div style='clear:both'></div>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=Subscribe&widgetId=Subscribe1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("Subscribe1"));' target='configSubscribe1' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget HTML' data-version='1' id='HTML1'>
+<h2 class='title'>Please Add This</h2>
+<div class='widget-content'>
+<div><a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4ae5895e615b1259"><img width="125" alt="Bookmark and Share" style="border:0" src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" height="16"/></a><script src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4ae5895e615b1259" type="text/javascript"></script></div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=HTML&widgetId=HTML1&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML1"));' target='configHTML1' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget AdSense' data-version='1' id='AdSense3'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-2705992652668855";
+google_ad_host="pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width=160;
+google_ad_height=600;
+google_ad_format="160x600_as";
+google_ad_type="text_image";
+google_color_border="15222B";
+google_color_bg="15222B";
+google_color_link="999999";
+google_color_url="BFE6FF";
+google_color_text="666666";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='//www.blogger.com/rearrange?blogID=833174317742362874&widgetType=AdSense&widgetId=AdSense3&action=editWidget&sectionId=sidebar' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense3"));' target='configAdSense3' title='Edit'>
+<img alt='' height='18' src='https://resources.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div></div>
+</div>
+<!-- spacer for skins that want sidebar and main to be the same height-->
+<div class='clear'>&#160;</div>
+</div>
+<!-- end content-wrapper -->
+<div id='footer-wrapper'>
+<div class='footer no-items section' id='footer'></div>
+</div>
+</div></div>
+<!-- end outer-wrapper -->
+<script src='https://apis.google.com/js/plusone.js' type='text/javascript'></script>
+
+<script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/698371418-widgets.js"></script>
+<script type='text/javascript'>
+window['__wavt'] = 'AOuZoY4rgweiyK5X1SUYge_T17N67xuhcQ:1521435151687';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d833174317742362874','//insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html','833174317742362874');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '833174317742362874', 'title': 'Insane Coding', 'url': 'http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html', 'canonicalUrl': 'http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html', 'homepageUrl': 'http://insanecoding.blogspot.com/', 'searchUrl': 'http://insanecoding.blogspot.com/search', 'canonicalHomepageUrl': 'http://insanecoding.blogspot.com/', 'blogspotFaviconUrl': 'http://insanecoding.blogspot.com/favicon.ico', 'bloggerUrl': 'https://www.blogger.com', 'hasCustomDomain': false, 'httpsEnabled': true, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'languageDirection': 'ltr', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Insane Coding - Atom\x22 href\x3d\x22http://insanecoding.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22Insane Coding - RSS\x22 href\x3d\x22http://insanecoding.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Insane Coding - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/833174317742362874/posts/default\x22 /\x3e\n\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Insane Coding - Atom\x22 href\x3d\x22http://insanecoding.blogspot.com/feeds/9026987131468508784/comments/default\x22 /\x3e\n', 'meTag': '', 'openIdOpTag': '', 'adsenseClientId': 'ca-pub-2705992652668855', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'adsenseHasAds': true, 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/6724040bb52bb8c9', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Google+', 'key': 'googlePlus', 'shareMessage': 'Share to Google+', 'target': 'googleplus'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'googlePlusShareButtonWidth': 300, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}, 'hasCustomJumpLinkMessage': false, 'jumpLinkMessage': 'Read more', 'pageType': 'item', 'postId': '9026987131468508784', 'postImageThumbnailUrl': 'http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s72-c/asprintf.png', 'postImageUrl': 'http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s1600/asprintf.png', 'pageName': 'Memory management in C and auto allocating sprintf() - asprintf()', 'pageTitle': 'Insane Coding: Memory management in C and auto allocating sprintf() - asprintf()'}}, {'name': 'features', 'data': {'lazy_images': 'false', 'sharing_get_link_dialog': 'true', 'sharing_native': 'false'}}, {'name': 'messages', 'data': {'edit': 'Edit', 'linkCopiedToClipboard': 'Link copied to clipboard!', 'ok': 'Ok', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'custom', 'localizedName': 'Custom', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': true}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'Memory management in C and auto allocating sprintf() - asprintf()', 'description': ' Memory Management  Memory management in C is viewed by some to be quite tricky. One needs to work with pointers that can point anywhere in ...', 'featuredImage': 'http://4.bp.blogspot.com/-bEUMLltnnYc/U7IuU4otihI/AAAAAAAAAMQ/1dVl_TTkdi4/s1600/asprintf.png', 'url': 'http://insanecoding.blogspot.com/2014/06/memory-management-in-c-and-auto.html', 'type': 'item', 'isSingleItem': true, 'isMultipleItems': false, 'isError': false, 'isPage': false, 'isPost': true, 'isHomepage': false, 'isArchive': false, 'isLabelSearch': false, 'postId': 9026987131468508784}}]);
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1', 'navbar', null, document.getElementById('Navbar1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'useNgc': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/1477909662-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/368954415-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1', 'sidebar', null, document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr', 'loadingMessage': 'Loading\x26hellip;'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogSearchView', new _WidgetInfo('BlogSearch1', 'sidebar', null, document.getElementById('BlogSearch1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_SubscribeView', new _WidgetInfo('Subscribe1', 'sidebar', null, document.getElementById('Subscribe1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense3', 'sidebar', null, document.getElementById('AdSense3'), {}, 'displayModeFull'));
+</script>
+</body>
+</html>

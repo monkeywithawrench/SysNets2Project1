@@ -1,3 +1,4 @@
+#define _GNU_SOURCE			//Need this for asprintf(), otherwise we get implicit declaration
 #include <stdio.h>          //Standard library
 #include <stdlib.h>         //Standard library
 #include <strings.h>        //Strings Library
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]){
 				if(token==NULL) //error checking
 					return404(newsocket);
 				token++;
-				char filename[strlen(token)];
+				char filename[strlen(token)+1]; //+1 for \0
 				strcpy( filename, token); //filename now saved
 				strcpy(delim,"."); //going for the file extension now
 				strcpy(temp, filename);
@@ -109,7 +110,7 @@ int main(int argc, char *argv[]){
 				token = strtok(NULL, delim); //YEEEEES, THIS IS THE GOOD STUFF!
 				if(token==NULL) //error checking
 					return404(newsocket);
-				char fileExtension[strlen(token)];
+				char fileExtension[strlen(token)+1]; //+1 for \0
 				strcpy(fileExtension, token); //ALL YOUR TOKENS ARE BELONG TO MEEEE!
 
 
