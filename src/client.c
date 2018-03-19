@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 	char *getrequest;
 	asprintf(&getrequest, "POST /%s HTTP/1.1\n", buffer);
 	asprintf(&getrequest, "%sHost: %s\n", getrequest, argv[1]);
-	asprintf(&getrequest, "%sConnection: keep-alive\n");
+	asprintf(&getrequest, "%sConnection: keep-alive\n", getrequest);
 	//asprintf(&getrequest, "%sConnection: close\n", getrequest);
 	asprintf(&getrequest, "%sContent-Length: 44\n", getrequest);
 	asprintf(&getrequest, "%sCache-Control: no-cache\n", getrequest);
