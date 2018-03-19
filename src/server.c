@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 	client = sizeof(client_address);
 	while(1==1) { //while true (runs forever)
 
-		newsocket = accept(socket_hold,(struct sockaddr *) &client_address, &client);//(file descriptor socketed-binded-listened,pointer to sockaddr struct, sizeof pointed struct)
+		newsocket = accept(socket_hold,(struct sockaddr *) &client_address, (socklen_t)&client);//(file descriptor socketed-binded-listened,pointer to sockaddr struct, sizeof pointed struct)
 
 		if (newsocket < 0){
 			fprintf(stderr,"Accept failed");
