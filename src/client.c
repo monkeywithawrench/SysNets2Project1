@@ -18,7 +18,6 @@
 */
 
 #define BUFFER_MAX_SIZE 2048 //Defining a constant for max buffer size. Cleaner than magic numbers
-#define MAX_CONTENT_SIZE 102375 //This is the max size (100KiB) of a page that can be loaded with this client, excluding media.
 
 //The client
 int main(int argc, char *argv[]){
@@ -83,17 +82,17 @@ int main(int argc, char *argv[]){
 	}
 	buffer[strcspn(buffer, "\n")] = 0;
 
-	char getrequest[BUFFER_MAX_SIZE];
-	snprintf(getrequest, BUFFER_MAX_SIZE, "POST /%s HTTP/1.1\n", buffer);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sHost: %s\n", getrequest, argv[1]);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sConnection: keep-alive\n");
-	//snprintf(getrequest, BUFFER_MAX_SIZE, "%sConnection: close\n", getrequest);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sContent-Length: 44\n", getrequest);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sCache-Control: no-cache\n", getrequest);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sOrigin: Server program info\n", getrequest);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sUser-Agent: Server machine info\n", getrequest);
-	snprintf(getrequest, BUFFER_MAX_SIZE, "%sContent-Type: text/html\n", getrequest);
-	//snprintf(getrequest, BUFFER_MAX_SIZE, "%s\n<html><body><h1>It works!</h1></body></html>\n", getrequest);
+	char *getrequest;
+	asprintf(&getrequest, "POST /%s HTTP/1.1\n", buffer);
+	asprintf(&getrequest, "%sHost: %s\n", getrequest, argv[1]);
+	asprintf(&getrequest, "%sConnection: keep-alive\n");
+	//asprintf(&getrequest, "%sConnection: close\n", getrequest);
+	asprintf(&getrequest, "%sContent-Length: 44\n", getrequest);
+	asprintf(&getrequest, "%sCache-Control: no-cache\n", getrequest);
+	asprintf(&getrequest, "%sOrigin: Server program info\n", getrequest);
+	asprintf(&getrequest, "%sUser-Agent: Server machine info\n", getrequest);
+	asprintf(&getrequest, "%sContent-Type: text/html\n", getrequest);
+	//asprintf(&getrequest, "%s\n<html><body><h1>It works!</h1></body></html>\n", getrequest);
 
 	n = write(socket_hold,getrequest,strlen(getrequest));//(reference to socket by file descriptor, the message written, write up to this length
 
