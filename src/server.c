@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
 			n = read(newsocket,buffer,BUFFER_MAX_SIZE);
 
 			if (n <= 0){
-				fprintf(stderr,"Reading from socket fail");
+				fprintf(stderr,"Reading from socket fail, error: %d", n);
 				exit(1);
 			}
 			else {
