@@ -8,6 +8,7 @@
 #include <netinet/in.h>     //Structures to store address information
 #include <netdb.h>          //Definitions for network's functions
 #include <unistd.h>			//Needed for read() and write()
+#include <errno.h>			//Needed to check errno returned by system calls
 
 /**
 * Access the server, send a response, and acquire services
@@ -46,14 +47,14 @@ int main(int argc, char *argv[]){
 	//Check for socket
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);//return file descriptor, else -1
 	if (socket_hold < 0 ){
-		fprintf(stderr,"Socket Fail");
-      		exit(0);
+		fprintf(stderr,"Socket Fail, errno: %d\n", errno);
+		exit(0);
 	}
 
 	//Check hostname
 	server = gethostbyname(argv[1]);//server name, return hostent
 	if (server == NULL){
-		fprintf(stderr,"Host does not exist\n");
+		fprintf(stderr,"Host does not exist, errno: %d\n", errno);
 		exit(0);
 	}
 	
@@ -65,8 +66,8 @@ int main(int argc, char *argv[]){
 	//Check the connection
 	int checkConnect = connect(socket_hold,(struct sockaddr *)&server_address,sizeof(server_address));//(reference to socket by file descriptor,the specified address, address space of socket)
 	if ( checkConnect < 0){
-		fprintf(stderr,"Failed connection\n");
-      		exit(0);
+		fprintf(stderr,"Failed connection, errno: %d\n", errno);
+		exit(0);
 	}
 	
 	
@@ -101,8 +102,8 @@ int main(int argc, char *argv[]){
 
 	//Check write success
 	if (n < 0){
-		fprintf(stderr,"Writing to socket fail");
-      		exit(0);
+		fprintf(stderr,"Writing to socket fail, errno: %d\n", errno);
+		exit(0);
 	}
 
 	memset(buffer,0,BUFFER_MAX_SIZE);
@@ -111,8 +112,8 @@ int main(int argc, char *argv[]){
 	//Check read success
 	n = read(socket_hold,content,CONTENT_MAX_SIZE);//(reference to socket by file descriptor, the message read, read up to this length)
 	if (n < 0){
-		fprintf(stderr,"Reading from socket fail");
-      		exit(0);
+		fprintf(stderr,"Reading from socket fail, errno: %d\n", errno);
+		exit(0);
 	}
 	printf("%s\n",content);
   	}//part of while loop

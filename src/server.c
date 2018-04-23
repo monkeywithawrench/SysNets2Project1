@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
 	//Check socket success
 	socket_hold = socket(AF_INET, SOCK_STREAM, 0);
 	if (socket_hold < 0){
-		fprintf(stderr,"Opening socket failed");
+		fprintf(stderr,"Opening socket failed, errno: %d\n", errno);
 		exit(1);
 	}
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 
 	//Check binding success
 	if (bind(socket_hold, (struct sockaddr *) &server_address,sizeof(server_address)) < 0){//the socket, its cast, the size
-		fprintf(stderr,"Binding failed");
+		fprintf(stderr,"Binding failed, errno: %d\n", errno);
 		exit(1);
 	}
 
@@ -69,13 +69,13 @@ int main(int argc, char *argv[]){
 		newsocket = accept(socket_hold,(struct sockaddr *) &client_address, (socklen_t *) &client);//(file descriptor socketed-binded-listened,pointer to sockaddr struct, sizeof pointed struct)
 
 		if (newsocket < 0){
-			fprintf(stderr,"Accept failed");
+			fprintf(stderr,"Accept failed, errno: %d\n", errno);
 			exit(1);
 		}
 
 		pid = fork(); //creating child process
 		if (pid < 0) { //something went wrong, pid is only <0 when a fork error occurs
-			fprintf(stderr,"ERROR on fork");
+			fprintf(stderr,"ERROR on fork, errno: %d\n", errno);
 			exit(1);
 		}
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
 			n = read(newsocket,buffer,BUFFER_MAX_SIZE);
 
 			if (n <= 0){
-				fprintf(stderr,"Reading from socket fail, error: %d", n);
+				fprintf(stderr,"Reading from socket fail, errno: %d\n", errno);
 				exit(1);
 			}
 			else {
@@ -171,6 +171,10 @@ int main(int argc, char *argv[]){
 							memcpy(response+headerSize, (void *)fileContents, fileSize); //append the file to our memory chunk
 
 							n = write(newsocket, response, headerSize + fileSize);
+							if (n < 0){
+								fprintf(stderr,"Writing to socket fail, errno: %d\n", errno);
+								exit(1);
+							}
 							fprintf(stdout,"%s\n\n\n",response);
 							free(fileContents); //ALWAYS FREE YOUR MALLOCS WHEN DONE, MKAY?!
 							free(response); //free the response too
@@ -184,7 +188,7 @@ int main(int argc, char *argv[]){
 					return404(newsocket);
 				}
 				if (n < 0){
-					fprintf(stderr,"Writing to socket fail");
+					fprintf(stderr,"Writing to socket fail, errno: %d\n", errno);
 					exit(1);
 				}
 			}
@@ -270,7 +274,7 @@ void return404(int newsocket) {
 	int n = write(newsocket,postrequest, strlen(postrequest));
 	fprintf(stdout,"%s\n\n\n",postrequest);
 	if (n < 0){
-		fprintf(stderr,"Writing to socket fail");
+		fprintf(stderr,"Writing to socket fail, errno: %d\n", errno);
 		exit(1);
 	}
 	exit(0);
@@ -293,7 +297,7 @@ void return500(int newsocket) {
 	int n = write(newsocket,postrequest, strlen(postrequest));
 	fprintf(stdout,"%s\n\n\n",postrequest);
 	if (n < 0){
-		fprintf(stderr,"Writing to socket fail");
+		fprintf(stderr,"Writing to socket fail, errno: %d\n", errno);
 		exit(1);
 	}
 	exit(0);
