@@ -8,7 +8,7 @@
 #include <netinet/in.h>     //Structures to store address information
 #include <netdb.h>          //Definitions for network's functions
 #include <unistd.h>			//Needed for read() and write()
-#include <errno.h>			//Needed to check errno returned by system calls
+#include <errno.h>			//Used for accessing errno, an int variable set by some system calls and library functions to an error number
 
 /**
 * Access the server, send a response, and acquire services

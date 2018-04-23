@@ -7,6 +7,7 @@
 #include <sys/types.h>      //more definitions
 #include <netinet/in.h>     //Structures to store address information
 #include <unistd.h>         //Needed for access() to check file information, as well as read() and write()
+#include <errno.h>			//Used for accessing errno, an int variable set by some system calls and library functions to an error number
 
 /**
  * Listen for the client, send request, and make available its services
