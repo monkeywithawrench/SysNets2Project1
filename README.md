@@ -1,5 +1,7 @@
 # SysNets2Project1
 
+HTTP server and command line client, written from scratch in C. See Protocol Document for more info.
+
 GET requests look like: (replace <filename> with the name of the file you're requesting, if any. Note: no file name usually defaults to index.html on most websites)
 Note: a lot of the fields in these requests (both get and post) are optional. Recommended to at least add Content-Type field
 
